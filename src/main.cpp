@@ -34,7 +34,7 @@ void setup() {
 
   initializeRelays();
   initializeRotaryEncoder();
-  attachRotaryEncoderInterrupts(updateEncoder, updateEncoder, handleButton);
+  attachRotaryEncoderInterrupts(updateEncoder, handleButton);
   initializeRTC();
   initLCD();
 
@@ -228,7 +228,7 @@ void loop() {
         stateMachine.currentState = STATE_SHOWING_DETAILS;
         break;
       case STATE_SHOWING_DETAILS:
-        stateMachine.currentState = STATE_CONFIGURING;
+        stateMachine.currentState = STATE_MENU_NAVIGATION;
         break;
       case STATE_MENU_NAVIGATION:
         // Handle menu navigation button press

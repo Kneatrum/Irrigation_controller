@@ -24,7 +24,7 @@ extern volatile bool encoderMoved;      // Flag to indicate if encoder has moved
 void initializeRotaryEncoder();
 
 // Attach interrupt handlers for rotary encoder
-void attachRotaryEncoderInterrupts(void (*clkISR)(), void (*dtISR)(), void (*swISR)());
+void attachRotaryEncoderInterrupts(void (*clkISR)(), void (*swISR)());
 
 void updateEncoder();
 void handleButton();

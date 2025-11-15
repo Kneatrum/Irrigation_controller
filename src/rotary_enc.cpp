@@ -33,9 +33,8 @@ void initializeRotaryEncoder() {
   interrupts();
 }
 
-void attachRotaryEncoderInterrupts(void (*clkISR)(), void (*dtISR)(), void (*swISR)()) {
+void attachRotaryEncoderInterrupts(void (*clkISR)(), void (*swISR)()) {
   attachInterrupt(digitalPinToInterrupt(ROTARY_ENCODER_CLK_PIN), clkISR, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(ROTARY_ENCODER_DT_PIN), dtISR, CHANGE);
   attachInterrupt(digitalPinToInterrupt(ROTARY_ENCODER_SW_PIN), swISR, CHANGE);
 }
 
