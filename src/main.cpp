@@ -218,8 +218,8 @@ void loop() {
     }
   }
 
-  if (buttonPressed) {
-    buttonPressed = false;
+  if (shortPressFlag) {
+    shortPressFlag = false;
     CONFIG_STATE_COUNTER = 0;
     SHOW_DETAILS_COUNTER = 0;
     switch (stateMachine.currentState)
@@ -275,5 +275,9 @@ void loop() {
     }
   }
 
+  if( longPressFlag){
+    longPressFlag = false;
+    
+  }
 
 }
