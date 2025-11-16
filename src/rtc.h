@@ -57,5 +57,6 @@ bool isSecondsBeforeIrrigationEvent(
     bool checkStartEvent   // true = check start time, false = check stop time
 ) ;
 bool isWithinIrrigationTime(irrigationTime_t *irrigationTime);
+uint8_t daysInMonth(uint8_t year_suffix, uint8_t month);
 
 #endif
