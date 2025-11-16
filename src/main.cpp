@@ -236,9 +236,13 @@ void loop() {
       case STATE_SHOWING_DETAILS:
         stateMachine.currentState = STATE_MENU_NAVIGATION;
         break;
-      case STATE_MENU_NAVIGATION:
+      case STATE_MENU_NAVIGATION:{
         // Handle menu navigation button press
-        switch (activeMenuIndex) {
+        uint8_t menuIndex = stateMachine.activeMenuIndex;
+        if (!VALVE_STATE && menuIndex >= FORCE_STOP_IRRIGATION) {
+          menuIndex++;    // jump over FORCE_STOP_IRRIGATION
+        }
+        switch (menuIndex) {
           case SET_IRRIGATION_TIME:
             stateMachine.currentState = STATE_CONFIGURING;
             stateMachine.currentConfigSubstate = IRRIGATION_TIME_NAVIGATION;
@@ -260,8 +264,6 @@ void loop() {
             Serial.println("FORCE_STOP_IRRIGATION");
             break;
           case EXIT_CONFIGURATION:
-            stateMachine.currentState = STATE_SHOWING_DETAILS;
-            SHOW_DETAILS_COUNTER = 0;
             Serial.println("EXIT_CONFIGURATION");
             setShowingDetailsState();
             break;
@@ -269,6 +271,7 @@ void loop() {
             break;
         }
         break;
+      }
       case STATE_CONFIGURING:
         if(stateMachine.currentConfigSubstate == IRRIGATION_TIME_NAVIGATION){
           if(stateMachine.currentNotification == SAVE_IRRIGATION_SCHEDULE){
