@@ -63,9 +63,7 @@ void setup() {
     Serial.println(VALVE_STATE);
     stateMachine.currentState = STATE_SHOWING_DETAILS;
     SHOW_DETAILS_COUNTER = 0;
-  } else {
-    stateMachine.CONFIG_DONE = false;
-    stateMachine.currentState = STATE_MENU_NAVIGATION;
+    setMenuNavigationState();
     CONFIG_STATE_COUNTER = 0;
   }
 
@@ -93,20 +91,24 @@ void loop() {
 
     // Auto-exit details screen after timeout
     if(stateMachine.currentState == STATE_SHOWING_DETAILS) {
-      SHOW_DETAILS_COUNTER += 1000;
-      if (SHOW_DETAILS_COUNTER >= DISPLAY_DETAILS_TIMEOUT) {
-        SHOW_DETAILS_COUNTER = 0;
-        stateMachine.currentState = STATE_IDLE;
+      stateMachine.SHOW_DETAILS_COUNTER += 1000;
+      if (stateMachine.SHOW_DETAILS_COUNTER >= stateMachine.DISPLAY_DETAILS_TIMEOUT) {
+        setIdleState();
       }
     }
 
     // Auto-exit configuring state after timeout
     if(stateMachine.currentState == STATE_CONFIGURING && stateMachine.CONFIG_DONE) {
-      CONFIG_STATE_COUNTER += 1000;
-      if (CONFIG_STATE_COUNTER >= CONFIGURE_DETAILS_TIMEOUT) {
-        CONFIG_STATE_COUNTER = 0;
-        stateMachine.currentState = STATE_SHOWING_DETAILS;
-        SHOW_DETAILS_COUNTER = 0;       
+      stateMachine.CONFIG_STATE_COUNTER += 1000;
+      if (stateMachine.CONFIG_STATE_COUNTER >= stateMachine.CONFIGURE_DETAILS_TIMEOUT) {       
+        setShowingDetailsState();
+      }
+    }
+
+    if(stateMachine.currentState == STATE_MENU_NAVIGATION && stateMachine.CONFIG_DONE){
+      stateMachine.MENU_NAV_STATE_COUNTER += 1000;
+      if(stateMachine.currentIrrigationTimeField >= stateMachine.MENU_NAV_STATE_TIMEOUT){
+        setShowingDetailsState();
       }
     }
   }
@@ -117,8 +119,7 @@ void loop() {
     bool withinIrrigationTime = isWithinIrrigationTime(&irrigationSchedule);
 
     if(isSecondsBeforeIrrigationEvent(&irrigationSchedule,10, !VALVE_STATE)){
-      SHOW_DETAILS_COUNTER = 0;
-      stateMachine.currentState = STATE_SHOWING_DETAILS;
+      setShowingDetailsState();
     }
 
     if (withinIrrigationTime && !VALVE_STATE) {
@@ -160,9 +161,14 @@ void loop() {
         break;
       }
       case STATE_CONFIGURING:
-        CONFIG_STATE_COUNTER = 0;
+        stateMachine.CONFIG_STATE_COUNTER = 0;
         if (stateMachine.currentConfigSubstate == IRRIGATION_TIME_NAVIGATION) {
-          handleIrrigationTimeField(&stateMachine.currentIrrigationTimeField, &irrigationSchedule);
+          if(stateMachine.currentNotification == SAVE_IRRIGATION_SCHEDULE){
+            stateMachine.USER_CONFIRMS = !stateMachine.USER_CONFIRMS;
+            updateScreenFlag = true;
+          } else {
+            handleIrrigationTimeField(&stateMachine.currentIrrigationTimeField, &irrigationSchedule);
+          }
         } else if (stateMachine.currentConfigSubstate == SYSTEM_TIME_NAVIGATION) {
           handleSystemTimeField(&stateMachine.currentSystemTimeField, &newSystemTime);
         }
@@ -182,7 +188,7 @@ void loop() {
         showDetailsScreen(&currentTime, &irrigationSchedule, &VALVE_STATE);
         break;
       case STATE_MENU_NAVIGATION:
-        drawMenu(activeMenuIndex, VALVE_STATE);
+        drawMenu(stateMachine.activeMenuIndex, VALVE_STATE);
         break;
       case STATE_CONFIGURING:
         if(stateMachine.currentConfigSubstate == IRRIGATION_TIME_NAVIGATION) {
@@ -252,6 +258,7 @@ void loop() {
             stateMachine.currentState = STATE_SHOWING_DETAILS;
             SHOW_DETAILS_COUNTER = 0;
             Serial.println("EXIT_CONFIGURATION");
+            setShowingDetailsState();
             break;
           default:
             break;
