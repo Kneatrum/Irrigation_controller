@@ -36,7 +36,7 @@ void turnOnDisplay() {
 }
 
 
-void drawMenu(uint8_t selectedIndex, bool irrigationActive) {
+void drawMenu(StateMachine sm) {
   u8g2.clearBuffer();
   u8g2.setFont(u8g2_font_6x13_tr);
   
@@ -44,13 +44,13 @@ void drawMenu(uint8_t selectedIndex, bool irrigationActive) {
   
   for (uint8_t i = 0; i < MENU_ITEMS_COUNT; i++) {
     // Skip "Force stop" if irrigation is not active
-    if (i == 2 && !irrigationActive) {
+    if (i == 2 && !sm.valve_on && !sm.force_stop) {
       continue;
     }
     
     uint8_t y = TOP_MARGIN + displayIndex * ITEM_HEIGHT;
     
-    if (displayIndex == selectedIndex) {
+    if (displayIndex == sm.activeMenuIndex) {
       // Draw inverted rectangle
       u8g2.setDrawColor(1);
       u8g2.drawBox(0, y - ITEM_HEIGHT + 2, 128, ITEM_HEIGHT);
@@ -59,7 +59,11 @@ void drawMenu(uint8_t selectedIndex, bool irrigationActive) {
       u8g2.setDrawColor(1);
     }
     
+    if(sm.force_stop && i == 2){
+      u8g2.drawStr(5, y, "Continue Irrigation");
+    } else {
     u8g2.drawStr(5, y, MENU_ITEMS[i]);
+    }
     displayIndex++;
   }
   

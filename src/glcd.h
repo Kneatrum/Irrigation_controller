@@ -19,7 +19,7 @@ extern bool displayOn;
 void initLCD();
 void turnOnBacklight();
 void turnOffBacklight();
-void drawMenu(uint8_t selectedIndex, bool irrigationActive);
+void drawMenu(StateMachine sm);
 void turnOffDisplay();
 void turnOnDisplay();
 void showDetailsScreen(RTCTime_t* currentTime, irrigationTime_t* schedule, bool* valveState);
