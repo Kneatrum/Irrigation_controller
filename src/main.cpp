@@ -191,11 +191,16 @@ void loop() {
         drawMenu(stateMachine.activeMenuIndex, VALVE_STATE);
         break;
       case STATE_CONFIGURING:
-        if(stateMachine.currentConfigSubstate == IRRIGATION_TIME_NAVIGATION) {
-          showIrrigationTimeSetting(&irrigationSchedule, stateMachine.currentIrrigationTimeField);
-        } else if (stateMachine.currentConfigSubstate == SYSTEM_TIME_NAVIGATION) {
-          showSystemTimeSetting(&newSystemTime, monthsOfYear, stateMachine.currentSystemTimeField);
-        }
+          if(stateMachine.currentConfigSubstate == IRRIGATION_TIME_NAVIGATION) {
+            if(stateMachine.currentNotification == SAVE_IRRIGATION_SCHEDULE){
+              promptUserSaveNewSchedule(irrigationSchedule, stateMachine);
+            } else {
+              showIrrigationTimeSetting(&irrigationSchedule, stateMachine.currentIrrigationTimeField);
+            }
+          } else if (stateMachine.currentConfigSubstate == SYSTEM_TIME_NAVIGATION) {
+            showSystemTimeSetting(&newSystemTime, monthsOfYear, stateMachine.currentSystemTimeField);
+          }
+        
         break;
       default:
         // Unknown state, reset to IDLE
@@ -266,7 +271,17 @@ void loop() {
         break;
       case STATE_CONFIGURING:
         if(stateMachine.currentConfigSubstate == IRRIGATION_TIME_NAVIGATION){
-          configureIrrigationTime(&stateMachine, &irrigationSchedule);
+          if(stateMachine.currentNotification == SAVE_IRRIGATION_SCHEDULE){
+            if(stateMachine.USER_CONFIRMS){
+              if (writeIrrigationTime(&irrigationSchedule) == EEPROM_SUCCESS){
+                // Show success message but i am not doing that.
+              }
+            }
+            // Go back to STATE_SHOWING_DETAILS regardless of the outcome.
+            setShowingDetailsState();
+          } else {
+            configureIrrigationTime(&stateMachine, &irrigationSchedule);
+          }
         } else if(stateMachine.currentConfigSubstate == SYSTEM_TIME_NAVIGATION){
           configureSystemTime(&stateMachine, &newSystemTime);
         }

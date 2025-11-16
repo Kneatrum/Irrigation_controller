@@ -41,6 +41,13 @@ typedef enum {
     EXIT_CONFIGURATION
 } MenuItems;
 
+typedef enum {
+    NONE,
+    SAVE_IRRIGATION_SCHEDULE,
+    SAVE_SYSTEM_TIME,
+    DISPLAY_RELAY_OPERATION,
+} Notification;
+
 typedef struct {
     SystemState currentState;
     ConfigSubstate currentConfigSubstate;

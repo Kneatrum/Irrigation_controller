@@ -104,13 +104,7 @@ void configureIrrigationTime(StateMachine* sm, irrigationTime_t* schedule) {
       sm->currentIrrigationTimeField = IRRIGATION_STOP_MINUTE;
       break;
     case IRRIGATION_STOP_MINUTE:
-      // Set notification that configuration is done
-      // Write irrigation time to EEPROM
-      if (writeIrrigationTime(schedule) == EEPROM_SUCCESS){
-        sm->currentState = STATE_SHOWING_DETAILS;
-        sm->currentIrrigationTimeField = IRRIGATION_START_HOUR;
-        sm->CONFIG_DONE = true;
-      }
+      sm->currentIrrigationTimeField = IRRIGATION_START_HOUR;
       break;
     default:
       break;
