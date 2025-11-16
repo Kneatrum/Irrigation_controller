@@ -39,15 +39,16 @@ void setup() {
   uint32_t configure_timeout = readConfigureDetailsTimeout();
 
   if (display_timeout == 0xFFFFFFFF) {
-    DISPLAY_DETAILS_TIMEOUT = DEFAULT_TIMEOUT_MS;
+    stateMachine.DISPLAY_DETAILS_TIMEOUT = DEFAULT_TIMEOUT_MS;
   } else {
-    DISPLAY_DETAILS_TIMEOUT = display_timeout;
+    stateMachine.DISPLAY_DETAILS_TIMEOUT = display_timeout;
   } 
 
   if (configure_timeout == 0xFFFFFFFF) {
-    CONFIGURE_DETAILS_TIMEOUT = DEFAULT_TIMEOUT_MS;
+    stateMachine.CONFIGURE_DETAILS_TIMEOUT = DEFAULT_TIMEOUT_MS;
+    stateMachine.MENU_NAV_STATE_TIMEOUT = DEFAULT_TIMEOUT_MS; // Temporary solution
   } else {
-    DISPLAY_DETAILS_TIMEOUT = configure_timeout;
+    stateMachine.DISPLAY_DETAILS_TIMEOUT = configure_timeout;
   } 
   
   
@@ -61,10 +62,9 @@ void setup() {
     VALVE_STATE = readValveState();
     Serial.print("Valve state: ");
     Serial.println(VALVE_STATE);
-    stateMachine.currentState = STATE_SHOWING_DETAILS;
-    SHOW_DETAILS_COUNTER = 0;
+    setShowingDetailsState();
+  } else {
     setMenuNavigationState();
-    CONFIG_STATE_COUNTER = 0;
   }
 
   currentTime = getRTCTime();
@@ -149,12 +149,12 @@ void loop() {
         // Handle menu navigation
         uint8_t visibleMenuCount = VALVE_STATE ? MENU_ITEMS_COUNT : (MENU_ITEMS_COUNT - 1);
         if (clockwiseTurn) {
-          activeMenuIndex = (activeMenuIndex + 1) % visibleMenuCount;
+          stateMachine.activeMenuIndex = (stateMachine.activeMenuIndex + 1) % visibleMenuCount;
         } else {
-          if (activeMenuIndex == 0) {
-            activeMenuIndex = visibleMenuCount - 1;
+          if (stateMachine.activeMenuIndex == 0) {
+            stateMachine.activeMenuIndex = visibleMenuCount - 1;
           } else {
-            activeMenuIndex--;
+            stateMachine.activeMenuIndex--;
           }
         }
         updateScreenFlag = true;
