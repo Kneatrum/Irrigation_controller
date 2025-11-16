@@ -263,3 +263,28 @@ void handleSystemTimeField(SystemTimeEditingField * field, RTCTime_t * newSystem
   }      
 
 }
+
+
+void printState(){
+  Serial.print(F("Current state: "));
+  Serial.println(stateMachine.currentState);
+  Serial.print(F("Config substate: "));
+  Serial.println(stateMachine.currentConfigSubstate);
+  Serial.print(F("System Time Field: "));
+  Serial.println(stateMachine.currentSystemTimeField);
+  Serial.print(F("Irrigation Time field: "));
+  Serial.println(stateMachine.currentIrrigationTimeField);
+  Serial.print(F("Config done: "));
+  Serial.println(stateMachine.CONFIG_DONE);
+  Serial.print(F("Current Notification: "));
+  Serial.println(stateMachine.currentNotification);
+  Serial.print(F("User confirms: "));
+  Serial.println(stateMachine.USER_CONFIRMS);
+  Serial.print(F("Active menu index: "));
+  Serial.println(stateMachine.activeMenuIndex);
+  Serial.print(F("Force Stop: "));
+  Serial.println(stateMachine.force_stop);
+  Serial.print(F("Valve on: "));
+  Serial.println(stateMachine.valve_on);
+  Serial.println();
+}
