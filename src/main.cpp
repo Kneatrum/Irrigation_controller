@@ -170,7 +170,12 @@ void loop() {
             handleIrrigationTimeField(&stateMachine.currentIrrigationTimeField, &irrigationSchedule);
           }
         } else if (stateMachine.currentConfigSubstate == SYSTEM_TIME_NAVIGATION) {
-          handleSystemTimeField(&stateMachine.currentSystemTimeField, &newSystemTime);
+          if(stateMachine.currentNotification == SAVE_SYSTEM_TIME){
+            stateMachine.USER_CONFIRMS = !stateMachine.USER_CONFIRMS;
+            updateScreenFlag = true;
+          } else {
+            handleSystemTimeField(&stateMachine.currentSystemTimeField, &currentTime);
+          }
         }
       break;
       default:
@@ -198,7 +203,11 @@ void loop() {
               showIrrigationTimeSetting(&irrigationSchedule, stateMachine.currentIrrigationTimeField);
             }
           } else if (stateMachine.currentConfigSubstate == SYSTEM_TIME_NAVIGATION) {
-            showSystemTimeSetting(&newSystemTime, monthsOfYear, stateMachine.currentSystemTimeField);
+            if(stateMachine.currentNotification == SAVE_SYSTEM_TIME){
+              promptUserSaveSystemTime(currentTime, stateMachine);
+            } else {
+              showSystemTimeSetting(&currentTime, monthsOfYear, stateMachine.currentSystemTimeField);
+            }
           }
         
         break;
@@ -287,7 +296,14 @@ void loop() {
             configureIrrigationTime(&stateMachine, &irrigationSchedule);
           }
         } else if(stateMachine.currentConfigSubstate == SYSTEM_TIME_NAVIGATION){
-          configureSystemTime(&stateMachine, &newSystemTime);
+          if(stateMachine.currentNotification == SAVE_SYSTEM_TIME){
+            if(stateMachine.USER_CONFIRMS){
+              setSystemTime(currentTime);
+            }
+            setShowingDetailsState();
+          } else {
+            configureSystemTime(&stateMachine, &currentTime);
+          }
         }
         break;
     
@@ -309,7 +325,7 @@ void loop() {
         if(stateMachine.currentConfigSubstate == IRRIGATION_TIME_NAVIGATION){
           stateMachine.currentNotification = SAVE_IRRIGATION_SCHEDULE;
         } else if(stateMachine.currentConfigSubstate == SYSTEM_TIME_NAVIGATION){
-          
+          stateMachine.currentNotification = SAVE_SYSTEM_TIME;
         }
       break;
     }
