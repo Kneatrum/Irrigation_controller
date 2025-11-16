@@ -16,13 +16,22 @@ const char * const MENU_ITEMS[] = {
 // Optionally expose the number of menu items
 const unsigned int MENU_ITEMS_COUNT = sizeof(MENU_ITEMS) / sizeof(MENU_ITEMS[0]);
 
-uint8_t activeMenuIndex = 0;
 
 StateMachine stateMachine = {
   .currentState = STATE_IDLE,
   .currentConfigSubstate = IRRIGATION_TIME_NAVIGATION,
   .currentSystemTimeField = FIELD_HOURS,
-  .currentIrrigationTimeField = IRRIGATION_START_HOUR
+  .currentIrrigationTimeField = IRRIGATION_START_HOUR,
+  .CONFIG_DONE =false,
+  .currentNotification = NONE,
+  .USER_CONFIRMS = false,
+  .activeMenuIndex = 0,
+  .CONFIGURE_DETAILS_TIMEOUT = DEFAULT_TIMEOUT_MS,
+  .DISPLAY_DETAILS_TIMEOUT = DEFAULT_TIMEOUT_MS,
+  .MENU_NAV_STATE_TIMEOUT = DEFAULT_TIMEOUT_MS,
+  .CONFIG_STATE_COUNTER = 0,
+  .SHOW_DETAILS_COUNTER = 0,
+  .MENU_NAV_STATE_COUNTER = 0
 };
 
 
@@ -35,6 +44,13 @@ static void resetSubstates(){
 void setIdleState(){
   stateMachine.currentState = STATE_IDLE;
   resetSubstates();
+  stateMachine.CONFIG_DONE = true;
+  stateMachine.USER_CONFIRMS = false;
+  stateMachine.currentNotification = NONE;
+  stateMachine.activeMenuIndex = 0;
+  stateMachine.CONFIG_STATE_COUNTER = 0;
+  stateMachine.SHOW_DETAILS_COUNTER = 0;
+  stateMachine.MENU_NAV_STATE_COUNTER = 0;
 }
 
 void setShowingDetailsState(){
@@ -45,6 +61,13 @@ void setShowingDetailsState(){
 void setMenuNavigationState(){
   stateMachine.currentState = STATE_MENU_NAVIGATION;
   resetSubstates();
+  stateMachine.CONFIG_DONE = true;
+  stateMachine.USER_CONFIRMS = false;
+  stateMachine.currentNotification = NONE;
+  stateMachine.activeMenuIndex = 0;
+  stateMachine.CONFIG_STATE_COUNTER = 0;
+  stateMachine.SHOW_DETAILS_COUNTER = 0;
+  stateMachine.MENU_NAV_STATE_COUNTER = 0;
 }
 
 void setConfiguringState(){

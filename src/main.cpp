@@ -14,11 +14,6 @@ bool irrigationScheduleSet = false;
 const uint8_t ONE_SECOND_INTERVAL = 1;
 const uint8_t TWO_SECONDS_INTERVAL = 2;
 const uint8_t FIVE_SECONDS_INTERVAL = 5;
-uint32_t DEFAULT_TIMEOUT_MS = 90000; // 90 seconds
-uint32_t CONFIGURE_DETAILS_TIMEOUT = 0;
-uint32_t DISPLAY_DETAILS_TIMEOUT = 0;
-unsigned long CONFIG_STATE_COUNTER = 0;
-unsigned long SHOW_DETAILS_COUNTER = 0;
 
 RTCTime_t currentTime;
 systemTime_t newSystemTime;

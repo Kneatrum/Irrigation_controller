@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include "rtc.h"
 
+#define DEFAULT_TIMEOUT_MS 90000 // 90 seconds
+
 typedef enum {
     STATE_IDLE,
     STATE_SHOWING_DETAILS,
@@ -45,6 +47,15 @@ typedef struct {
     SystemTimeEditingField currentSystemTimeField;
     IrrigationTimeEditingField currentIrrigationTimeField;
     bool CONFIG_DONE;
+    Notification currentNotification;
+    bool USER_CONFIRMS;
+    uint8_t activeMenuIndex;
+    uint32_t CONFIGURE_DETAILS_TIMEOUT;
+    uint32_t DISPLAY_DETAILS_TIMEOUT;
+    uint32_t MENU_NAV_STATE_TIMEOUT;
+    unsigned long CONFIG_STATE_COUNTER;
+    unsigned long SHOW_DETAILS_COUNTER;
+    unsigned long MENU_NAV_STATE_COUNTER;
 } StateMachine;
 
 
@@ -59,7 +70,6 @@ extern MenuItems menuItems;
  */
 extern const char * const MENU_ITEMS[];
 extern const unsigned int MENU_ITEMS_COUNT;
-extern uint8_t activeMenuIndex;
 
 void setIdleState();
 void setShowingDetailsState();
