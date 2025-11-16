@@ -19,7 +19,7 @@
 #define VALVE_STATE_ADDRESS 8
 #define DISPLAY_DETAILS_TIMEOUT_ADDRESS 9
 #define CONFIGURE_DETAILS_TIMEOUT_ADDRESS 10
-
+#define FORCE_STOP_ADDRESS 20
 
 
 // Low-level EEPROM operations
@@ -53,6 +53,8 @@ uint32_t readDisplayDetailsTimeout();
 int writeConfigureDetailsTimeout(uint32_t timeout);
 uint32_t readConfigureDetailsTimeout();
 
+int writeForceStopStatus(bool force_stop_status);
 
+bool readForceStopStatus();
 
 #endif

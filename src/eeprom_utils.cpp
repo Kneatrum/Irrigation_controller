@@ -63,3 +63,14 @@ uint32_t readConfigureDetailsTimeout() {
         (static_cast<uint32_t>(data[2]) << 8) |
         static_cast<uint32_t>(data[3]);
 }
+
+
+int writeForceStopStatus(bool force_stop_status){
+    EEPROM.write(FORCE_STOP_ADDRESS, force_stop_status);
+}
+
+bool readForceStopStatus(){
+    uint8_t res = EEPROM.read(FORCE_STOP_ADDRESS);
+    if(res == 255 || res == 0) return false;
+    return true;
+}
