@@ -25,4 +25,5 @@ void turnOnDisplay();
 void showDetailsScreen(RTCTime_t* currentTime, irrigationTime_t* schedule, bool* valveState);
 void showIrrigationTimeSetting(irrigationTime_t* schedule, IrrigationTimeEditingField editingField);
 void showSystemTimeSetting(systemTime_t* systemTime, const char * const Months[], SystemTimeEditingField editingField);
+void promptUserSaveNewSchedule(irrigationTime_t schedule, StateMachine sm);
 #endif
