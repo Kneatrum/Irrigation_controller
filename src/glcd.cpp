@@ -171,7 +171,6 @@ void showIrrigationTimeSetting(irrigationTime_t* schedule, IrrigationTimeEditing
 }
 
 void showSystemTimeSetting(RTCTime_t* systemTime, const char * const Months[], SystemTimeEditingField editingField) {
-  Serial.print("Month: ");
   Serial.println(systemTime->month);
   u8g2.clearBuffer();
   u8g2.setFont(u8g2_font_6x13_tr);
