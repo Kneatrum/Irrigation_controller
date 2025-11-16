@@ -1,8 +1,9 @@
 #include <Arduino.h>
 #include "valve.h"
 #include "relays.h"
+#include "states.h"
 
-bool VALVE_STATE = false;
+
 
 void turnValveOff() {
     setPowerRelay(false);
@@ -12,7 +13,7 @@ void turnValveOff() {
     setPowerRelay(true);
     delay(VALVE_GEAR_TURN_DELAY_MS); 
     setPowerRelay(false);
-    VALVE_STATE = false;
+    stateMachine.valve_on = false;
 }
 
 void turnValveOn() {
@@ -25,5 +26,5 @@ void turnValveOn() {
     setPowerRelay(false);
     setPolarityRelay1(false);
     setPolarityRelay2(false);
-    VALVE_STATE = true;
+    stateMachine.valve_on = true;
 }
