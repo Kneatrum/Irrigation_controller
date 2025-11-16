@@ -347,3 +347,66 @@ void promptUserSaveNewSchedule(irrigationTime_t schedule, StateMachine sm) {
 }
 
 
+void promptUserSaveSystemTime(RTCTime_t newSystemTime, StateMachine sm) {
+  u8g2.clearBuffer();
+  u8g2.setFont(u8g2_font_6x13_tr);
+
+  // --- Title ---
+  const char* title = "Save system time";
+  uint8_t titleWidth = u8g2.getStrWidth(title);
+  uint8_t screenWidth = u8g2.getDisplayWidth();
+  uint8_t xCenter = (screenWidth - titleWidth) / 2;
+  uint8_t y = TOP_MARGIN;
+
+  u8g2.drawStr(xCenter, y, title);
+  y += ITEM_HEIGHT + 2;
+
+  // --- System Time (Format: 20YY-MM-DD-HH-MM-SS) ---
+  char buffer[30];
+  sprintf(buffer, "20%02d/%02d/%02d %02d:%02d:%02d", 
+          newSystemTime.day,
+          newSystemTime.month,
+          newSystemTime.year,
+          newSystemTime.hour,
+          newSystemTime.minute,
+          newSystemTime.second);
+
+  u8g2.drawStr(5, y, buffer);
+
+  // --- Bottom Buttons ---
+  const char* discardTxt = "DISCARD";
+  const char* saveTxt    = "SAVE";
+
+  uint8_t bottomY = u8g2.getDisplayHeight() - 5;
+
+  uint8_t discardX = 5;
+  uint8_t saveX = screenWidth - u8g2.getStrWidth(saveTxt) - 5;
+
+  bool saveActive = sm.USER_CONFIRMS;
+
+  // Highlight DISCARD if saveActive == false
+  if (!saveActive) {
+    uint8_t w = u8g2.getStrWidth(discardTxt) + 4;
+    uint8_t h = 10;
+    u8g2.drawBox(discardX - 2, bottomY - 10, w, h);
+    u8g2.setDrawColor(0);
+    u8g2.drawStr(discardX, bottomY - 2, discardTxt);
+    u8g2.setDrawColor(1);
+  } else {
+    u8g2.drawStr(discardX, bottomY - 2, discardTxt);
+  }
+
+  // Highlight SAVE if saveActive == true
+  if (saveActive) {
+    uint8_t w = u8g2.getStrWidth(saveTxt) + 4;
+    uint8_t h = 10;
+    u8g2.drawBox(saveX - 2, bottomY - 10, w, h);
+    u8g2.setDrawColor(0);
+    u8g2.drawStr(saveX, bottomY - 2, saveTxt);
+    u8g2.setDrawColor(1);
+  } else {
+    u8g2.drawStr(saveX, bottomY - 2, saveTxt);
+  }
+
+  u8g2.sendBuffer();
+}
