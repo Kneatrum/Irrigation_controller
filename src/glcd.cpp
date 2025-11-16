@@ -58,11 +58,11 @@ void drawMenu(StateMachine sm) {
     } else {
       u8g2.setDrawColor(1);
     }
-    
+
     if(sm.force_stop && i == 2){
       u8g2.drawStr(5, y, "Continue Irrigation");
     } else {
-    u8g2.drawStr(5, y, MENU_ITEMS[i]);
+      u8g2.drawStr(5, y, MENU_ITEMS[i]);
     }
     displayIndex++;
   }
