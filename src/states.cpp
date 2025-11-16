@@ -188,62 +188,76 @@ void handleIrrigationTimeField(IrrigationTimeEditingField *field, irrigationTime
   }
 }
 
-void handleSystemTimeField(SystemTimeEditingField * field, systemTime_t * newSystemTime) {
+void handleSystemTimeField(SystemTimeEditingField * field, RTCTime_t * newSystemTime) {
   switch(*field) {
     case FIELD_YEAR:
       if (clockwiseTurn) {
         clockwiseTurn = false;
         newSystemTime->year++;
-        if(newSystemTime->year > 100) newSystemTime->year = 100;
+        if(newSystemTime->year >= 100) newSystemTime->year = 0;
       } else {
         counterClockwiseTurn = false;
         newSystemTime->year--;
-        if(newSystemTime->year < 0) newSystemTime->year = 0;
+        if(newSystemTime->year >= 255) newSystemTime->year = 99;
       }
       break;
     case FIELD_MONTH:
       if (clockwiseTurn) {
         clockwiseTurn = false;
-        newSystemTime->month = (newSystemTime->month % 12) + 1;
+        newSystemTime->month = (newSystemTime->month + 1) % 12;
       } else {
         counterClockwiseTurn = false;
-        newSystemTime->month = (newSystemTime->month == 1) ? 12 : (newSystemTime->month - 1);
+        newSystemTime->month = (newSystemTime->month == 0) ? 11 : (newSystemTime->month - 1);
       }
       break;
-    case FIELD_DAY:
+    case FIELD_DAY: {
+      uint8_t max_days = daysInMonth(newSystemTime->year, newSystemTime->month + 1); 
+
+      // Ensure day is within 1..max_days
+      if (newSystemTime->day < 1) newSystemTime->day = 1;
+      if (newSystemTime->day > max_days) newSystemTime->day = max_days;
+
       if (clockwiseTurn) {
         clockwiseTurn = false;
-        newSystemTime->day = (newSystemTime->day % 31) + 1;
+        // Increment with wrap
+        newSystemTime->day++;
+        if (newSystemTime->day > max_days) newSystemTime->day = 1;
       } else {
         counterClockwiseTurn = false;
-        newSystemTime->day = (newSystemTime->day == 1) ? 31 : (newSystemTime->day - 1);
+        // Decrement with wrap
+        if (newSystemTime->day <= 1) {
+          newSystemTime->day = max_days;
+        } else {
+          newSystemTime->day--;
+        }
       }
       break;
+    }
     case FIELD_HOURS:
       if (clockwiseTurn) {
         clockwiseTurn = false;
-        newSystemTime->hours = (newSystemTime->hours + 1) % 24;
+        newSystemTime->hour = (newSystemTime->hour + 1) % 24;
       } else {
         counterClockwiseTurn = false;
-        newSystemTime->hours = (newSystemTime->hours == 0) ? 23 : (newSystemTime->hours - 1);
+        newSystemTime->hour = (newSystemTime->hour == 0) ? 23 : (newSystemTime->hour - 1);
       }
       break;
     case FIELD_MINUTES:
       if (clockwiseTurn) {
         clockwiseTurn = false;
-        newSystemTime->minutes = (newSystemTime->minutes + 1) % 60;
+        newSystemTime->minute = (newSystemTime->minute + 1) % 60;
       } else {
         counterClockwiseTurn = false;
-        newSystemTime->minutes = (newSystemTime->minutes == 0) ? 59 : (newSystemTime->minutes - 1);
+        newSystemTime->minute = (newSystemTime->minute == 0) ? 59 : (newSystemTime->minute - 1);
       }
       break;
     case FIELD_SECONDS:
       if (clockwiseTurn) {
         clockwiseTurn = false;
-        newSystemTime->seconds = (newSystemTime->seconds + 1) % 60;
+        newSystemTime->second = (newSystemTime->second + 1) % 60;
       } else {
         counterClockwiseTurn = false;
-        newSystemTime->seconds = (newSystemTime->seconds == 0) ? 59 : (newSystemTime->seconds - 1);
+        newSystemTime->second = (newSystemTime->second == 0) ? 59 : (newSystemTime->second - 1);
       }
       break;
     default:
