@@ -57,7 +57,8 @@ void setup() {
   if(irrigationScheduleSet) {
     stateMachine.CONFIG_DONE = true;
     irrigationSchedule = readIrrigationTime();
-    VALVE_STATE = readValveState();
+    stateMachine.valve_on = readValveState();
+    stateMachine.force_stop = readForceStopStatus();
     setShowingDetailsState();
   } else {
     setMenuNavigationState();
@@ -116,18 +117,34 @@ void loop() {
     five_seconds_flag = false;
     bool withinIrrigationTime = isWithinIrrigationTime(&irrigationSchedule);
 
-    if(isSecondsBeforeIrrigationEvent(&irrigationSchedule,10, !VALVE_STATE)){
+    if(stateMachine.force_stop && !withinIrrigationTime) {
+      stateMachine.force_stop = false;
+      writeForceStopStatus(stateMachine.force_stop);
+    }
+
+    if(isSecondsBeforeIrrigationEvent(&irrigationSchedule,10, !stateMachine.valve_on)){
       setShowingDetailsState();
     }
 
-    if (withinIrrigationTime && !VALVE_STATE) {
-      turnValveOn();
-      VALVE_STATE = true;
-      writeValveState(VALVE_STATE);
-    } else if (!withinIrrigationTime && VALVE_STATE) {
-      turnValveOff();
-      VALVE_STATE = false;
-      writeValveState(VALVE_STATE);
+    if(withinIrrigationTime){
+      if(stateMachine.force_stop){
+        if(stateMachine.valve_on){
+          turnValveOff();
+          writeValveState(stateMachine.valve_on);
+        }
+      } else {
+        if(!stateMachine.valve_on && !stateMachine.force_stop){
+          turnValveOn();
+          writeValveState(stateMachine.valve_on);
+        }
+      } 
+      
+    } else {
+      if(stateMachine.valve_on){
+        turnValveOff();
+        stateMachine.valve_on = false;
+        writeValveState(stateMachine.valve_on);
+      }
     }
   }
   
@@ -142,7 +159,7 @@ void loop() {
       break;
       case STATE_MENU_NAVIGATION: {
         // Handle menu navigation
-        uint8_t visibleMenuCount = VALVE_STATE ? MENU_ITEMS_COUNT : (MENU_ITEMS_COUNT - 1);
+        uint8_t visibleMenuCount = stateMachine.valve_on || stateMachine.force_stop ? MENU_ITEMS_COUNT : (MENU_ITEMS_COUNT - 1);
         if (clockwiseTurn) {
           stateMachine.activeMenuIndex = (stateMachine.activeMenuIndex + 1) % visibleMenuCount;
         } else {
@@ -185,10 +202,10 @@ void loop() {
       case STATE_IDLE:
         break;
       case STATE_SHOWING_DETAILS:
-        showDetailsScreen(&currentTime, &irrigationSchedule, &VALVE_STATE);
+        showDetailsScreen(&currentTime, &irrigationSchedule, stateMachine);
         break;
       case STATE_MENU_NAVIGATION:
-        drawMenu(stateMachine.activeMenuIndex, VALVE_STATE);
+        drawMenu(stateMachine);
         break;
       case STATE_CONFIGURING:
           if(stateMachine.currentConfigSubstate == IRRIGATION_TIME_NAVIGATION) {
@@ -244,8 +261,10 @@ void loop() {
       case STATE_MENU_NAVIGATION:{
         // Handle menu navigation button press
         uint8_t menuIndex = stateMachine.activeMenuIndex;
-        if (!VALVE_STATE && menuIndex >= FORCE_STOP_IRRIGATION) {
-          menuIndex++;    // jump over FORCE_STOP_IRRIGATION
+        if(!stateMachine.force_stop){
+          if ((!stateMachine.valve_on ) && menuIndex >= FORCE_STOP_IRRIGATION) {
+            menuIndex++;    // jump over FORCE_STOP_IRRIGATION
+          }
         }
         switch (menuIndex) {
           case SET_IRRIGATION_TIME:
@@ -259,10 +278,12 @@ void loop() {
             stateMachine.currentSystemTimeField = FIELD_YEAR;
             break;
           case FORCE_STOP_IRRIGATION:
-            if (VALVE_STATE) {
-              turnValveOff();
-              VALVE_STATE = false;
-              writeValveState(VALVE_STATE);
+            if (stateMachine.valve_on) {
+              stateMachine.force_stop = true;
+              writeForceStopStatus(stateMachine.force_stop);
+            } else if(stateMachine.force_stop){
+              stateMachine.force_stop = false;
+              writeForceStopStatus(stateMachine.force_stop);
             }
             break;
           case EXIT_CONFIGURATION:
