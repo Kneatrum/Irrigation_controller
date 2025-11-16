@@ -46,13 +46,13 @@ void updateEncoder() {
     int currentDT = digitalRead(ROTARY_ENCODER_DT_PIN);
 
     if(currentDT == LOW){
-      // Clockwise rotation
-      clockwiseTurn = true;
-      counterClockwiseTurn = false;
-    } else {
       // Counter-clockwise rotation
       counterClockwiseTurn = true;
       clockwiseTurn = false;
+    } else {
+      // Clockwise rotation
+      clockwiseTurn = true;
+      counterClockwiseTurn = false;
     }
 
     encoderMoved = true;
