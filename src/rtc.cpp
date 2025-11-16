@@ -57,6 +57,9 @@ int setSystemTime(RTCTime_t time) {
 RTCTime_t getRTCTime() {
     DateTime now = rtc.now();
     RTCTime_t rtcTime;
+    rtcTime.year = (uint8_t)(now.year() - 2000);
+    rtcTime.month = now.month();
+    rtcTime.day = now.day();
     rtcTime.hour = now.hour();
     rtcTime.minute = now.minute();
     rtcTime.second = now.second();
