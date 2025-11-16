@@ -363,9 +363,9 @@ void promptUserSaveSystemTime(RTCTime_t newSystemTime, StateMachine sm) {
   u8g2.drawStr(xCenter, y, title);
   y += ITEM_HEIGHT + 2;
 
-  // --- System Time (Format: 20YY-MM-DD-HH-MM-SS) ---
+  // --- System Time (Format: DD/MM/20YY HH-MM-SS) ---
   char buffer[30];
-  sprintf(buffer, "20%02d/%02d/%02d %02d:%02d:%02d", 
+  sprintf(buffer, "%02d/%02d/20%02d %02d:%02d:%02d", 
           newSystemTime.day,
           newSystemTime.month,
           newSystemTime.year,
