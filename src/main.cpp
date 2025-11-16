@@ -66,7 +66,6 @@ void setup() {
 
   currentTime = getRTCTime();
   lastTimestamp = getRTCTimestamp();
-  
 }
 
 
