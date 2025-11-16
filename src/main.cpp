@@ -53,15 +53,11 @@ void setup() {
   
   
   irrigationScheduleSet = isIrrigationScheduleSet();
-  Serial.print("Irrigation schedule set: ");
-  Serial.println(irrigationScheduleSet);
 
   if(irrigationScheduleSet) {
     stateMachine.CONFIG_DONE = true;
     irrigationSchedule = readIrrigationTime();
     VALVE_STATE = readValveState();
-    Serial.print("Valve state: ");
-    Serial.println(VALVE_STATE);
     setShowingDetailsState();
   } else {
     setMenuNavigationState();
@@ -125,12 +121,10 @@ void loop() {
     }
 
     if (withinIrrigationTime && !VALVE_STATE) {
-      Serial.println("TURNING ON RELAYS");
       turnValveOn();
       VALVE_STATE = true;
       writeValveState(VALVE_STATE);
     } else if (!withinIrrigationTime && VALVE_STATE) {
-      Serial.println("TURNING OFF RELAYS");
       turnValveOff();
       VALVE_STATE = false;
       writeValveState(VALVE_STATE);
@@ -140,7 +134,6 @@ void loop() {
  
   if(encoderMoved) {
     encoderMoved = false;
-    Serial.println(stateMachine.currentState);
     switch(stateMachine.currentState)
     {
       case STATE_IDLE:
@@ -259,13 +252,11 @@ void loop() {
             stateMachine.currentState = STATE_CONFIGURING;
             stateMachine.currentConfigSubstate = IRRIGATION_TIME_NAVIGATION;
             stateMachine.currentIrrigationTimeField = IRRIGATION_START_HOUR;
-            Serial.println("SET_IRRIGATION_TIME");
             break;
           case SET_SYSTEM_TIME:
             stateMachine.currentState = STATE_CONFIGURING;
             stateMachine.currentConfigSubstate = SYSTEM_TIME_NAVIGATION;
             stateMachine.currentSystemTimeField = FIELD_YEAR;
-            Serial.println("SET_SYSTEM_TIME");
             break;
           case FORCE_STOP_IRRIGATION:
             if (VALVE_STATE) {
@@ -273,10 +264,8 @@ void loop() {
               VALVE_STATE = false;
               writeValveState(VALVE_STATE);
             }
-            Serial.println("FORCE_STOP_IRRIGATION");
             break;
           case EXIT_CONFIGURATION:
-            Serial.println("EXIT_CONFIGURATION");
             setShowingDetailsState();
             break;
           default:
