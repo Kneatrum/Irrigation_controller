@@ -170,7 +170,9 @@ void showIrrigationTimeSetting(irrigationTime_t* schedule, IrrigationTimeEditing
   u8g2.sendBuffer();
 }
 
-void showSystemTimeSetting(systemTime_t* systemTime, const char * const Months[], SystemTimeEditingField editingField) {
+void showSystemTimeSetting(RTCTime_t* systemTime, const char * const Months[], SystemTimeEditingField editingField) {
+  Serial.print("Month: ");
+  Serial.println(systemTime->month);
   u8g2.clearBuffer();
   u8g2.setFont(u8g2_font_6x13_tr);
 
@@ -219,9 +221,9 @@ void showSystemTimeSetting(systemTime_t* systemTime, const char * const Months[]
       u8g2.setDrawColor(1);
       y += ITEM_HEIGHT + 2;
       if (blinkState)
-        sprintf(buffer, "%s", Months[systemTime->month - 1]);
+        sprintf(buffer, "%s", Months[systemTime->month]);
       else
-        sprintf(buffer, "");
+        sprintf(buffer, " ");
       u8g2.drawStr(x, y, buffer);
     break;
     case FIELD_DAY:
@@ -245,7 +247,7 @@ void showSystemTimeSetting(systemTime_t* systemTime, const char * const Months[]
       u8g2.setDrawColor(1);
       y += ITEM_HEIGHT + 2;
       if (blinkState)
-        sprintf(buffer, "%02d", systemTime->hours);
+        sprintf(buffer, "%02d", systemTime->hour);
       else
         sprintf(buffer, "   ");
       u8g2.drawStr(x, y, buffer);
@@ -258,7 +260,7 @@ void showSystemTimeSetting(systemTime_t* systemTime, const char * const Months[]
       u8g2.setDrawColor(1);
       y += ITEM_HEIGHT + 2;
       if (blinkState)
-        sprintf(buffer, "%02d", systemTime->minutes);
+        sprintf(buffer, "%02d", systemTime->minute);
       else
         sprintf(buffer, "   ");
       u8g2.drawStr(x, y, buffer);
@@ -271,7 +273,7 @@ void showSystemTimeSetting(systemTime_t* systemTime, const char * const Months[]
       u8g2.setDrawColor(1);
       y += ITEM_HEIGHT + 2;
       if (blinkState)
-        sprintf(buffer, "%02d", systemTime->seconds);
+        sprintf(buffer, "%02d", systemTime->second);
       else
         sprintf(buffer, "   ");
       u8g2.drawStr(x, y, buffer);
