@@ -79,7 +79,9 @@ void loop() {
 
   if (currentTimestamp - lastTimestamp >= ONE_SECOND_INTERVAL) {
     lastTimestamp = currentTimestamp;
-    currentTime = getRTCTime();
+    if(stateMachine.currentState != STATE_CONFIGURING && stateMachine.currentConfigSubstate != SYSTEM_TIME_NAVIGATION){
+      currentTime = getRTCTime();
+    }
     // one_second_flag = true;
     seconds_counter++;
     updateScreenFlag = true;
