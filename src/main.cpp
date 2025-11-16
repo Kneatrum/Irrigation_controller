@@ -294,7 +294,21 @@ void loop() {
 
   if( longPressFlag){
     longPressFlag = false;
-    
+    switch(stateMachine.currentState){
+      case STATE_IDLE:
+      break;
+      case STATE_SHOWING_DETAILS:
+      break;
+      case STATE_MENU_NAVIGATION:
+      break;
+      case STATE_CONFIGURING:
+        if(stateMachine.currentConfigSubstate == IRRIGATION_TIME_NAVIGATION){
+          stateMachine.currentNotification = SAVE_IRRIGATION_SCHEDULE;
+        } else if(stateMachine.currentConfigSubstate == SYSTEM_TIME_NAVIGATION){
+          
+        }
+      break;
+    }
   }
 
 }
