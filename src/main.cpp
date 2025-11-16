@@ -226,8 +226,9 @@ void loop() {
 
   if (shortPressFlag) {
     shortPressFlag = false;
-    CONFIG_STATE_COUNTER = 0;
-    SHOW_DETAILS_COUNTER = 0;
+    stateMachine.CONFIG_STATE_COUNTER = 0;
+    stateMachine.SHOW_DETAILS_COUNTER = 0;
+    stateMachine.MENU_NAV_STATE_COUNTER = 0;
     switch (stateMachine.currentState)
     {
       case STATE_IDLE:
