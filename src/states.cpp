@@ -113,7 +113,7 @@ void configureIrrigationTime(StateMachine* sm, irrigationTime_t* schedule) {
 }
 
 
-void configureSystemTime(StateMachine* sm, systemTime_t* newTime) {
+void configureSystemTime(StateMachine* sm, RTCTime_t* newTime) {
   // Implementation for configuring system time
   // This function should handle the logic for setting the system time
   // based on the current field being edited in the state machine.
@@ -135,10 +135,6 @@ void configureSystemTime(StateMachine* sm, systemTime_t* newTime) {
     break;
     case FIELD_SECONDS:
       sm->currentSystemTimeField = FIELD_YEAR;
-      // Set notification that configuration is done
-      // Write system time to RTC
-      // writeSystemTime(newTime);
-      setSystemTime(newTime);
       break;
     default:
       break;

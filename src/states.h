@@ -84,7 +84,7 @@ void setMenuNavigationState();
 void setConfiguringState();
 
 void configureIrrigationTime(StateMachine* sm, irrigationTime_t* schedule);
-void configureSystemTime(StateMachine* sm, systemTime_t* newTime);
+void configureSystemTime(StateMachine* sm, RTCTime_t* newTime) ;
 void handleIrrigationTimeField(IrrigationTimeEditingField *field, irrigationTime_t *irrigationSchedule);
 void handleSystemTimeField(SystemTimeEditingField * field, RTCTime_t * newSystemTime);
 
