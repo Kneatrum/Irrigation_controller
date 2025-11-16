@@ -31,7 +31,9 @@ StateMachine stateMachine = {
   .MENU_NAV_STATE_TIMEOUT = DEFAULT_TIMEOUT_MS,
   .CONFIG_STATE_COUNTER = 0,
   .SHOW_DETAILS_COUNTER = 0,
-  .MENU_NAV_STATE_COUNTER = 0
+  .MENU_NAV_STATE_COUNTER = 0,
+  .force_stop = false,
+  .valve_on = false
 };
 
 
