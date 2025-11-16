@@ -105,7 +105,7 @@ void loop() {
 
     if(stateMachine.currentState == STATE_MENU_NAVIGATION && stateMachine.CONFIG_DONE){
       stateMachine.MENU_NAV_STATE_COUNTER += 1000;
-      if(stateMachine.currentIrrigationTimeField >= stateMachine.MENU_NAV_STATE_TIMEOUT){
+      if(stateMachine.MENU_NAV_STATE_COUNTER >= stateMachine.MENU_NAV_STATE_TIMEOUT){
         setShowingDetailsState();
       }
     }
