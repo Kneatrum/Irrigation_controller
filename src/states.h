@@ -63,6 +63,8 @@ typedef struct {
     unsigned long CONFIG_STATE_COUNTER;
     unsigned long SHOW_DETAILS_COUNTER;
     unsigned long MENU_NAV_STATE_COUNTER;
+    bool force_stop;
+    bool valve_on;
 } StateMachine;
 
 
