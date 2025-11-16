@@ -194,9 +194,11 @@ void handleSystemTimeField(SystemTimeEditingField * field, systemTime_t * newSys
       if (clockwiseTurn) {
         clockwiseTurn = false;
         newSystemTime->year++;
+        if(newSystemTime->year > 100) newSystemTime->year = 100;
       } else {
         counterClockwiseTurn = false;
         newSystemTime->year--;
+        if(newSystemTime->year < 0) newSystemTime->year = 0;
       }
       break;
     case FIELD_MONTH:
