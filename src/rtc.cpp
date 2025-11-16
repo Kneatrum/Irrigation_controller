@@ -41,14 +41,14 @@ unsigned long getRTCTimestamp() {
     return now.unixtime();;
 }
 
-int setSystemTime(const systemTime_t *time) {
+int setSystemTime(RTCTime_t time) {
     rtc.adjust(DateTime(
-        time->year,
-        time->month,
-        time->day,
-        time->hours,
-        time->minutes,
-        time->seconds
+        time.year,
+        time.month,
+        time.day,
+        time.hour,
+        time.minute,
+        time.second
     ));
 
     return 0; // Success

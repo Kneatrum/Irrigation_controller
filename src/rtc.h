@@ -41,7 +41,7 @@ void initializeRTC();
 // Get timestamp from RTC and set system time
 unsigned long getRTCTimestamp();
 
-int setSystemTime(const systemTime_t *time);
+int setSystemTime(RTCTime_t time);
 
 RTCTime_t getRTCTime();
 
