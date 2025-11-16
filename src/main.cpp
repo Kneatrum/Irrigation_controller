@@ -284,6 +284,7 @@ void loop() {
               stateMachine.force_stop = false;
               writeForceStopStatus(stateMachine.force_stop);
             }
+            setShowingDetailsState();
             break;
           case EXIT_CONFIGURATION:
             setShowingDetailsState();
