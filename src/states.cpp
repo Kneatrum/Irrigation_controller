@@ -56,6 +56,13 @@ void setIdleState(){
 void setShowingDetailsState(){
   stateMachine.currentState = STATE_SHOWING_DETAILS;
   resetSubstates();
+  stateMachine.CONFIG_DONE = true;
+  stateMachine.USER_CONFIRMS = false;
+  stateMachine.currentNotification = NONE;
+  stateMachine.activeMenuIndex = 0;
+  stateMachine.CONFIG_STATE_COUNTER = 0;
+  stateMachine.SHOW_DETAILS_COUNTER = 0;
+  stateMachine.MENU_NAV_STATE_COUNTER = 0;
 }
 
 void setMenuNavigationState(){
@@ -73,6 +80,13 @@ void setMenuNavigationState(){
 void setConfiguringState(){
   stateMachine.currentState = STATE_CONFIGURING;
   resetSubstates();
+  stateMachine.CONFIG_DONE = true;
+  stateMachine.USER_CONFIRMS = false;
+  stateMachine.currentNotification = NONE;
+  stateMachine.activeMenuIndex = 0;
+  stateMachine.CONFIG_STATE_COUNTER = 0;
+  stateMachine.SHOW_DETAILS_COUNTER = 0;
+  stateMachine.MENU_NAV_STATE_COUNTER = 0;
 }
 
 void configureIrrigationTime(StateMachine* sm, irrigationTime_t* schedule) {
