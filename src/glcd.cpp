@@ -73,7 +73,7 @@ void drawMenu(StateMachine sm) {
 
 
 
-void showDetailsScreen(RTCTime_t* currentTime, irrigationTime_t* schedule, bool* valveState) {
+void showDetailsScreen(RTCTime_t* currentTime, irrigationTime_t* schedule, StateMachine sm) {
   u8g2.clearBuffer();
   u8g2.setFont(u8g2_font_6x13_tr);
 
@@ -87,7 +87,11 @@ void showDetailsScreen(RTCTime_t* currentTime, irrigationTime_t* schedule, bool*
   y += ITEM_HEIGHT;
 
   // Irrigation Status
-  sprintf(buffer, "Irrigation: %s", (*valveState) ? "ON" : "OFF");
+  if(sm.force_stop){
+    sprintf(buffer, "Irrigation: %s", "Stopped");
+  } else {
+    sprintf(buffer, "Irrigation: %s", (sm.valve_on) ? "ON" : "OFF");
+  }
   u8g2.drawStr(x, y, buffer);
   y += ITEM_HEIGHT;
 

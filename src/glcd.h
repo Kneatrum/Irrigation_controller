@@ -22,7 +22,7 @@ void turnOffBacklight();
 void drawMenu(StateMachine sm);
 void turnOffDisplay();
 void turnOnDisplay();
-void showDetailsScreen(RTCTime_t* currentTime, irrigationTime_t* schedule, bool* valveState);
+void showDetailsScreen(RTCTime_t* currentTime, irrigationTime_t* schedule, StateMachine sm);
 void showIrrigationTimeSetting(irrigationTime_t* schedule, IrrigationTimeEditingField editingField);
 void showSystemTimeSetting(RTCTime_t* systemTime, const char * const Months[], SystemTimeEditingField editingField);
 void promptUserSaveNewSchedule(irrigationTime_t schedule, StateMachine sm);
