@@ -130,7 +130,7 @@ void showIrrigationTimeSetting(irrigationTime_t* schedule, IrrigationTimeEditing
   static unsigned long lastBlinkTime = 0;
   static bool blinkState = true;
   unsigned long now = millis();
-  if (now - lastBlinkTime >= 500) {  // toggle every 500 ms
+  if (now - lastBlinkTime >= 500) {
     blinkState = !blinkState;
     lastBlinkTime = now;
   }
@@ -138,7 +138,7 @@ void showIrrigationTimeSetting(irrigationTime_t* schedule, IrrigationTimeEditing
   // === Highlighted Title ===
   uint8_t titleHeight = ITEM_HEIGHT + 2;
   u8g2.setDrawColor(1);
-  u8g2.drawBox(0, y - (ITEM_HEIGHT - 2), 128, titleHeight); // full bar
+  u8g2.drawBox(0, y - (ITEM_HEIGHT - 2), 128, titleHeight);
   u8g2.setDrawColor(0);
   u8g2.drawStr(x, y, "Set Irrigation Time");
   u8g2.setDrawColor(1);
@@ -171,22 +171,30 @@ void showIrrigationTimeSetting(irrigationTime_t* schedule, IrrigationTimeEditing
   else
     sprintf(stopMinStr, "%02d", stopMinute);
 
-  // === Final Line ===
+  // === Time line ===
   sprintf(buffer, "%s:%s       %s:%s", startHourStr, startMinStr, stopHourStr, stopMinStr);
   u8g2.drawStr(x, y, buffer);
+
+  // === New line: "Long-press to save" ===
+  y += ITEM_HEIGHT + 3;                 // move down a little
+  u8g2.setFont(u8g2_font_6x10_tr);       // optional smaller font
+  u8g2.drawStr(x, y, "Long-press to save");
 
   u8g2.sendBuffer();
 }
 
-void showSystemTimeSetting(RTCTime_t* systemTime, const char * const Months[], SystemTimeEditingField editingField) {
-  Serial.println(systemTime->month);
+void showSystemTimeSetting(
+    RTCTime_t* systemTime,
+    const char * const Months[],
+    SystemTimeEditingField editingField
+) {
   u8g2.clearBuffer();
   u8g2.setFont(u8g2_font_6x13_tr);
 
-  uint8_t y = TOP_MARGIN;
-  const uint8_t x = 5;
+  const uint8_t screenW = u8g2.getDisplayWidth();
+  const uint8_t screenH = u8g2.getDisplayHeight();
 
-  // === Internal Blink ===
+  // === Blink timing ===
   static unsigned long lastBlinkTime = 0;
   static bool blinkState = true;
   unsigned long now = millis();
@@ -197,95 +205,71 @@ void showSystemTimeSetting(RTCTime_t* systemTime, const char * const Months[], S
 
   char buffer[40];
 
-  // === Highlighted Title ===
-  uint8_t titleHeight = ITEM_HEIGHT + 2;
-  u8g2.setDrawColor(1);
-  u8g2.drawBox(0, y - (ITEM_HEIGHT - 2), 128, titleHeight); // full bar
-  u8g2.setDrawColor(0);
-  u8g2.drawStr(x, y, "Set System Time");
-  u8g2.setDrawColor(1);
-  y += ITEM_HEIGHT + 4;
+  // ============================
+  // Title: centered at top
+  // ============================
+  const char* title = "Set system time";
+  uint8_t titleW = u8g2.getStrWidth(title);
+  u8g2.drawStr((screenW - titleW) / 2, 12, title);
 
-  switch(editingField){
-    case FIELD_YEAR:
-      u8g2.setDrawColor(1);
-      u8g2.drawBox(0, y - (ITEM_HEIGHT ), 128, titleHeight); // full bar
-      u8g2.setDrawColor(0);
-      u8g2.drawStr(x, y, "Year");
-      u8g2.setDrawColor(1);
-      y += ITEM_HEIGHT + 2;
-      if (blinkState)
-        sprintf(buffer, "20%02d", systemTime->year);
-      else
-        sprintf(buffer, "20  ");
-      u8g2.drawStr(x, y, buffer);
-    break;
-    case FIELD_MONTH:
-      u8g2.setDrawColor(1);
-      u8g2.drawBox(0, y - (ITEM_HEIGHT ), 128, titleHeight); // full bar
-      u8g2.setDrawColor(0);
-      u8g2.drawStr(x, y, "Month");
-      u8g2.setDrawColor(1);
-      y += ITEM_HEIGHT + 2;
-      if (blinkState)
-        sprintf(buffer, "%s", Months[systemTime->month]);
-      else
-        sprintf(buffer, " ");
-      u8g2.drawStr(x, y, buffer);
-    break;
-    case FIELD_DAY:
-      u8g2.setDrawColor(1);
-      u8g2.drawBox(0, y - (ITEM_HEIGHT ), 128, titleHeight); // full bar
-      u8g2.setDrawColor(0);
-      u8g2.drawStr(x, y, "Day of month");
-      u8g2.setDrawColor(1);
-      y += ITEM_HEIGHT + 2;
-      if (blinkState)
-        sprintf(buffer, "%02d", systemTime->day);
-      else
-        sprintf(buffer, "   ");
-      u8g2.drawStr(x, y, buffer);
-    break;
-    case FIELD_HOURS:
-      u8g2.setDrawColor(1);
-      u8g2.drawBox(0, y - (ITEM_HEIGHT ), 128, titleHeight); // full bar
-      u8g2.setDrawColor(0);
-      u8g2.drawStr(x, y, "Hours");
-      u8g2.setDrawColor(1);
-      y += ITEM_HEIGHT + 2;
-      if (blinkState)
-        sprintf(buffer, "%02d", systemTime->hour);
-      else
-        sprintf(buffer, "   ");
-      u8g2.drawStr(x, y, buffer);
-    break;
-    case FIELD_MINUTES:
-      u8g2.setDrawColor(1);
-      u8g2.drawBox(0, y - (ITEM_HEIGHT ), 128, titleHeight); // full bar
-      u8g2.setDrawColor(0);
-      u8g2.drawStr(x, y, "Minutes");
-      u8g2.setDrawColor(1);
-      y += ITEM_HEIGHT + 2;
-      if (blinkState)
-        sprintf(buffer, "%02d", systemTime->minute);
-      else
-        sprintf(buffer, "   ");
-      u8g2.drawStr(x, y, buffer);
-    break;
-    case FIELD_SECONDS:
-      u8g2.setDrawColor(1);
-      u8g2.drawBox(0, y - (ITEM_HEIGHT ), 128, titleHeight); // full bar
-      u8g2.setDrawColor(0);
-      u8g2.drawStr(x, y, "Seconds");
-      u8g2.setDrawColor(1);
-      y += ITEM_HEIGHT + 2;
-      if (blinkState)
-        sprintf(buffer, "%02d", systemTime->second);
-      else
-        sprintf(buffer, "   ");
-      u8g2.drawStr(x, y, buffer);
-    break;
-  }
+  // ============================
+  // Date + Time in one line
+  // ============================
+  // Format: DD/MM/YYYY HH:MM:SS
+  char dateTime[40];
+
+  // Build each field with blinking support
+  char dd[4], mm[4], yyyy[8], HH[4], MM[4], SS[4];
+
+  // DAY
+  if (editingField == FIELD_DAY && !blinkState)
+    sprintf(dd, "  ");
+  else
+    sprintf(dd, "%02d", systemTime->day);
+
+  // MONTH
+  if (editingField == FIELD_MONTH && !blinkState)
+    sprintf(mm, "  ");
+  else
+    sprintf(mm, "%02d", systemTime->month);
+
+  // YEAR
+  if (editingField == FIELD_YEAR && !blinkState)
+    sprintf(yyyy, "    ");
+  else
+    sprintf(yyyy, "20%02d", systemTime->year);
+
+  // HOURS
+  if (editingField == FIELD_HOURS && !blinkState)
+    sprintf(HH, "  ");
+  else
+    sprintf(HH, "%02d", systemTime->hour);
+
+  // MINUTES
+  if (editingField == FIELD_MINUTES && !blinkState)
+    sprintf(MM, "  ");
+  else
+    sprintf(MM, "%02d", systemTime->minute);
+
+  // SECONDS
+  if (editingField == FIELD_SECONDS && !blinkState)
+    sprintf(SS, "  ");
+  else
+    sprintf(SS, "%02d", systemTime->second);
+
+  // Combine into final formatted line
+  sprintf(dateTime, "%s/%s/%s  %s:%s:%s", dd, mm, yyyy, HH, MM, SS);
+
+  // Center the date/time horizontally
+  uint8_t dtW = u8g2.getStrWidth(dateTime);
+  u8g2.drawStr((screenW - dtW) / 2, 32, dateTime);
+
+  // ============================
+  // Bottom text
+  // ============================
+  const char* footer = "Long-press to save";
+  uint8_t fw = u8g2.getStrWidth(footer);
+  u8g2.drawStr((screenW - fw) / 2, screenH - 4, footer);
 
   u8g2.sendBuffer();
 }
@@ -294,62 +278,61 @@ void promptUserSaveNewSchedule(irrigationTime_t schedule, StateMachine sm) {
   u8g2.clearBuffer();
   u8g2.setFont(u8g2_font_6x13_tr);
 
-  // --- Title ---
+  const uint8_t screenW = u8g2.getDisplayWidth();
+  const uint8_t screenH = u8g2.getDisplayHeight();
+
+  // ===== Title =====
   const char* title = "New schedule";
   uint8_t titleWidth = u8g2.getStrWidth(title);
-  uint8_t screenWidth = u8g2.getDisplayWidth();
-  uint8_t xCenter = (screenWidth - titleWidth) / 2;
-  uint8_t y = TOP_MARGIN;
+  uint8_t xCenter = (screenW - titleWidth) / 2;
 
+  uint8_t y = 12;  
   u8g2.drawStr(xCenter, y, title);
-  y += ITEM_HEIGHT + 2;
 
-  // --- Start Time ---
+  // ===== Start / Stop =====
+  y += 16;  // exact spacing under title
+
   char buffer[20];
   sprintf(buffer, "Start: %02d:%02d", schedule.startHour, schedule.startMinute);
   u8g2.drawStr(5, y, buffer);
-  y += ITEM_HEIGHT;
 
-  // --- Stop Time ---
+  y += 15;
   sprintf(buffer, "Stop : %02d:%02d", schedule.stopHour, schedule.stopMinute);
   u8g2.drawStr(5, y, buffer);
 
-  // --- Bottom Buttons ---
+  // ===== Buttons =====
   const char* discardTxt = "DISCARD";
-  const char* saveTxt     = "SAVE";
+  const char* saveTxt    = "SAVE";
 
-  uint8_t bottomY = u8g2.getDisplayHeight() - 5;
+  uint8_t buttonTextY = screenH - 4;     // baseline
+  uint8_t buttonBoxTop = screenH - 14;   // top of highlight
+  uint8_t buttonBoxH = 14;               // full highlight height
 
   uint8_t discardX = 5;
-  uint8_t saveX = screenWidth - u8g2.getStrWidth(saveTxt) - 5;
+  uint8_t saveX = screenW - u8g2.getStrWidth(saveTxt) - 5;
 
-  // Highlight logic
   bool saveActive = sm.USER_CONFIRMS;
 
+  // --- DISCARD ---
   if (!saveActive) {
-    // Highlight DISCARD
-    uint8_t w = u8g2.getStrWidth(discardTxt) + 4;
-    uint8_t h = 10;
-    u8g2.drawBox(discardX - 2, bottomY - 10, w, h);
+    uint8_t w = u8g2.getStrWidth(discardTxt) + 6;
+    u8g2.drawBox(discardX - 3, buttonBoxTop, w, buttonBoxH);
     u8g2.setDrawColor(0);
-    u8g2.drawStr(discardX, bottomY - 2, discardTxt);
+    u8g2.drawStr(discardX, buttonTextY, discardTxt);
     u8g2.setDrawColor(1);
   } else {
-    // Draw normal DISCARD
-    u8g2.drawStr(discardX, bottomY - 2, discardTxt);
+    u8g2.drawStr(discardX, buttonTextY, discardTxt);
   }
 
+  // --- SAVE ---
   if (saveActive) {
-    // Highlight SAVE
-    uint8_t w = u8g2.getStrWidth(saveTxt) + 4;
-    uint8_t h = 10;
-    u8g2.drawBox(saveX - 2, bottomY - 10, w, h);
+    uint8_t w = u8g2.getStrWidth(saveTxt) + 6;
+    u8g2.drawBox(saveX - 3, buttonBoxTop, w, buttonBoxH);
     u8g2.setDrawColor(0);
-    u8g2.drawStr(saveX, bottomY - 2, saveTxt);
+    u8g2.drawStr(saveX, buttonTextY, saveTxt);
     u8g2.setDrawColor(1);
   } else {
-    // Normal SAVE
-    u8g2.drawStr(saveX, bottomY - 2, saveTxt);
+    u8g2.drawStr(saveX, buttonTextY, saveTxt);
   }
 
   u8g2.sendBuffer();
@@ -360,19 +343,23 @@ void promptUserSaveSystemTime(RTCTime_t newSystemTime, StateMachine sm) {
   u8g2.clearBuffer();
   u8g2.setFont(u8g2_font_6x13_tr);
 
-  // --- Title ---
+  const uint8_t screenW = u8g2.getDisplayWidth();
+  const uint8_t screenH = u8g2.getDisplayHeight();
+
+  // ===== Title =====
   const char* title = "Save system time";
   uint8_t titleWidth = u8g2.getStrWidth(title);
-  uint8_t screenWidth = u8g2.getDisplayWidth();
-  uint8_t xCenter = (screenWidth - titleWidth) / 2;
-  uint8_t y = TOP_MARGIN;
+  uint8_t xCenter = (screenW - titleWidth) / 2;
 
-  u8g2.drawStr(xCenter, y, title);
-  y += ITEM_HEIGHT + 2;
+  uint8_t titleY = 12;     // nice top margin
+  u8g2.drawStr(xCenter, titleY, title);
 
-  // --- System Time (Format: DD/MM/20YY HH-MM-SS) ---
+  // ===== Centered Date/Time =====
+  // Baseline around the visual center of the display
+  uint8_t centerY = screenH / 2;  // baseline is okay because text height ~ 13px
+
   char buffer[30];
-  sprintf(buffer, "%02d/%02d/20%02d %02d:%02d:%02d", 
+  sprintf(buffer, "%02d/%02d/20%02d %02d:%02d:%02d",
           newSystemTime.day,
           newSystemTime.month,
           newSystemTime.year,
@@ -380,41 +367,41 @@ void promptUserSaveSystemTime(RTCTime_t newSystemTime, StateMachine sm) {
           newSystemTime.minute,
           newSystemTime.second);
 
-  u8g2.drawStr(5, y, buffer);
+  u8g2.drawStr(10, centerY, buffer);
 
-  // --- Bottom Buttons ---
+  // ===== Buttons =====
   const char* discardTxt = "DISCARD";
   const char* saveTxt    = "SAVE";
 
-  uint8_t bottomY = u8g2.getDisplayHeight() - 5;
+  uint8_t buttonTextY = screenH - 4;     // baseline
+  uint8_t buttonBoxTop = screenH - 14;   // top of highlight box
+  uint8_t buttonBoxH = 14;
 
   uint8_t discardX = 5;
-  uint8_t saveX = screenWidth - u8g2.getStrWidth(saveTxt) - 5;
+  uint8_t saveX = screenW - u8g2.getStrWidth(saveTxt) - 5;
 
   bool saveActive = sm.USER_CONFIRMS;
 
-  // Highlight DISCARD if saveActive == false
+  // --- DISCARD ---
   if (!saveActive) {
-    uint8_t w = u8g2.getStrWidth(discardTxt) + 4;
-    uint8_t h = 10;
-    u8g2.drawBox(discardX - 2, bottomY - 10, w, h);
+    uint8_t w = u8g2.getStrWidth(discardTxt) + 6;
+    u8g2.drawBox(discardX - 3, buttonBoxTop, w, buttonBoxH);
     u8g2.setDrawColor(0);
-    u8g2.drawStr(discardX, bottomY - 2, discardTxt);
+    u8g2.drawStr(discardX, buttonTextY, discardTxt);
     u8g2.setDrawColor(1);
   } else {
-    u8g2.drawStr(discardX, bottomY - 2, discardTxt);
+    u8g2.drawStr(discardX, buttonTextY, discardTxt);
   }
 
-  // Highlight SAVE if saveActive == true
+  // --- SAVE ---
   if (saveActive) {
-    uint8_t w = u8g2.getStrWidth(saveTxt) + 4;
-    uint8_t h = 10;
-    u8g2.drawBox(saveX - 2, bottomY - 10, w, h);
+    uint8_t w = u8g2.getStrWidth(saveTxt) + 6;
+    u8g2.drawBox(saveX - 3, buttonBoxTop, w, buttonBoxH);
     u8g2.setDrawColor(0);
-    u8g2.drawStr(saveX, bottomY - 2, saveTxt);
+    u8g2.drawStr(saveX, buttonTextY, saveTxt);
     u8g2.setDrawColor(1);
   } else {
-    u8g2.drawStr(saveX, bottomY - 2, saveTxt);
+    u8g2.drawStr(saveX, buttonTextY, saveTxt);
   }
 
   u8g2.sendBuffer();
