@@ -203,8 +203,6 @@ void showSystemTimeSetting(
     lastBlinkTime = now;
   }
 
-  char buffer[40];
-
   // ============================
   // Title: centered at top
   // ============================
