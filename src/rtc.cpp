@@ -82,10 +82,6 @@ bool isIrrigationScheduleSet(){
     time.startMinute = readStartMinute();
     time.stopHour    = readStopHour();
     time.stopMinute  = readStopMinute();
-    Serial.println(time.startHour);
-    Serial.println(time.startMinute);
-    Serial.println(time.stopHour);
-    Serial.println(time.stopMinute);
     if( time.startHour == 255 || time.startMinute == 255 || time.stopHour == 255 || time.stopMinute == 255 )  return false;
     return true;
 }
