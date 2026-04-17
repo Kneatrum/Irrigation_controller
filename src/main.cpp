@@ -24,8 +24,8 @@ uint8_t seconds_counter = 0;
 
 void setup() {
 
-  Serial.begin(115200);
-  while(!Serial);
+  // Serial.begin(115200);
+  // while(!Serial);
 
   initializeRelays();
   initializeRotaryEncoder();
