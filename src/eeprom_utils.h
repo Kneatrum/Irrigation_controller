@@ -3,23 +3,56 @@
 
 #include <Arduino.h>
 #include <EEPROM.h>
+#include "voltage_ctrl.h"
 
 #define EEPROM_SIZE 512
 #define MAX_EEPROM_ADDRESS (EEPROM_SIZE - 1)
 #define MIN_EEPROM_ADDRESS 0
 #define EEPROM_ERROR_INVALID_ADDRESS -1
 #define EEPROM_ERROR_INVALID_LENGTH -2
+#define EEPROM_OPERATION_NOT_ALLOWED -3
 #define EEPROM_SUCCESS 0
+#define EEPROM_ERROR 1
 
-#define START_HOUR_ADDRESS 0
-#define START_MINUTE_ADDRESS 1
-#define STOP_HOUR_ADDRESS 2
-#define STOP_MINUTE_ADDRESS 3
+#define SCHEDULE_1_START_HOUR_ADDRESS 0
+#define SCHEDULE_1_START_MINUTE_ADDRESS 1
+#define SCHEDULE_1_STOP_HOUR_ADDRESS 2
+#define SCHEDULE_1_STOP_MINUTE_ADDRESS 3
+#define SCHEDULE_1_ENABLED_STATUS_ADDRESS 4
 
-#define VALVE_STATE_ADDRESS 8
-#define DISPLAY_DETAILS_TIMEOUT_ADDRESS 9
-#define CONFIGURE_DETAILS_TIMEOUT_ADDRESS 10
-#define FORCE_STOP_ADDRESS 20
+#define SCHEDULE_2_START_HOUR_ADDRESS 5
+#define SCHEDULE_2_START_MINUTE_ADDRESS 6
+#define SCHEDULE_2_STOP_HOUR_ADDRESS 7
+#define SCHEDULE_2_STOP_MINUTE_ADDRESS 8
+#define SCHEDULE_2_ENABLED_STATUS_ADDRESS 9
+
+#define SCHEDULE_3_START_HOUR_ADDRESS 10
+#define SCHEDULE_3_START_MINUTE_ADDRESS 11
+#define SCHEDULE_3_STOP_HOUR_ADDRESS 12
+#define SCHEDULE_3_STOP_MINUTE_ADDRESS 13
+#define SCHEDULE_3_ENABLED_STATUS_ADDRESS 14
+
+#define SCHEDULE_4_START_HOUR_ADDRESS 15
+#define SCHEDULE_4_START_MINUTE_ADDRESS 16
+#define SCHEDULE_4_STOP_HOUR_ADDRESS 17
+#define SCHEDULE_4_STOP_MINUTE_ADDRESS 18
+#define SCHEDULE_4_ENABLED_STATUS_ADDRESS 19
+
+#define VALVE_STATE_ADDRESS 20
+#define DISPLAY_DETAILS_TIMEOUT_ADDRESS 21
+#define CONFIGURE_DETAILS_TIMEOUT_ADDRESS 22
+#define FORCE_STOP_ADDRESS 23
+
+#define SELECTED_VALVE_ADDRESS 24
+#define SELECTED_VOLTAGE_ADDRESS 25
+
+#define VALVE_SELECTED_ADDRESS 26
+#define VOLTAGE_SELECTED_ADDRESS 27
+
+#define SCHEDULE_1_EN_ADDRESS 28
+#define SCHEDULE_2_EN_ADDRESS 29
+#define SCHEDULE_3_EN_ADDRESS 30
+#define SCHEDULE_4_EN_ADDRESS 31
 
 
 // Low-level EEPROM operations
@@ -27,24 +60,21 @@ int writeEEPROM(uint8_t address, const uint8_t *data, size_t length);
 uint8_t readEEPROM(uint8_t address, size_t length);
 
 // Inline single-byte helpers
-inline int writeStartHour(uint8_t value) { return writeEEPROM(START_HOUR_ADDRESS, &value, 1); }
-inline uint8_t readStartHour() { return readEEPROM(START_HOUR_ADDRESS, 1); }
+void writeStartHour(uint8_t hour, uint8_t schedule);
+uint8_t readStartHour(uint8_t schedule);
 
-inline int writeStartMinute(uint8_t value) { return writeEEPROM(START_MINUTE_ADDRESS, &value, 1); }
-inline uint8_t readStartMinute() { return readEEPROM(START_MINUTE_ADDRESS, 1); }
+void writeStartMinute(uint8_t minute, uint8_t schedule);
+uint8_t readStartMinute(uint8_t schedule);
 
-inline int writeStopHour(uint8_t value) { return writeEEPROM(STOP_HOUR_ADDRESS, &value, 1); }
-inline uint8_t readStopHour() { return readEEPROM(STOP_HOUR_ADDRESS, 1); }
+void writeStopHour(uint8_t hour, uint8_t schedule);
+uint8_t readStopHour(uint8_t schedule);
 
-inline int writeStopMinute(uint8_t value) { return writeEEPROM(STOP_MINUTE_ADDRESS, &value, 1); }
-inline uint8_t readStopMinute() { return readEEPROM(STOP_MINUTE_ADDRESS, 1); }
+void writeStopMinute(uint8_t minute, uint8_t schedule);
+uint8_t readStopMinute(uint8_t schedule);
 
-inline int writeValveState(bool state) {
-    uint8_t val = state ? 1 : 0;
-    return writeEEPROM(VALVE_STATE_ADDRESS, &val, 1);
-}
+void writeValveState(bool state);
 
-inline bool readValveState() { return readEEPROM(VALVE_STATE_ADDRESS, 1) != 0; }
+bool readValveState();
 
 // Prototypes for multi-byte data
 int writeDisplayDetailsTimeout(uint32_t timeout);
@@ -53,8 +83,20 @@ uint32_t readDisplayDetailsTimeout();
 int writeConfigureDetailsTimeout(uint32_t timeout);
 uint32_t readConfigureDetailsTimeout();
 
-int writeForceStopStatus(bool force_stop_status);
+void writeForceStopStatus(bool force_stop_status);
 
 bool readForceStopStatus();
+
+ValveType readSelectedValve();
+bool saveSelectedValve(ValveType selectedValve);
+
+ValveVoltage readSelectedVoltage();
+int saveSelectedVoltage(ValveVoltage slected_voltage);
+void saveValveSelectionState(bool selected);
+void saveVoltageSelectionState(bool selected);
+bool readVoltageSelectionState();
+bool readValveSelectionState();
+bool writeEnableStatus(uint8_t schedule, bool enable);
+bool readEnableStatus(uint8_t schedule);
 
 #endif

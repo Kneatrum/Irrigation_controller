@@ -29,15 +29,25 @@ typedef struct {
     uint8_t second;
 } RTCTime_t;
 
+
 typedef struct {
     uint8_t startHour;
     uint8_t startMinute;
     uint8_t stopHour;
     uint8_t stopMinute;
-} irrigationTime_t;
+} ScheduleTime_t;
+
+typedef struct {
+    ScheduleTime_t schedule_time;
+    bool time_is_set;
+    bool enabled; // Meaning it has no effect even if it's time for irrigation
+    bool active; // Meaning it's time for irrigation
+    uint8_t selected_option;
+    const char ** schedule_options;
+} IrrigationSchedule_t;
 
 
-extern irrigationTime_t irrigationSchedule;
+// extern IrrigationSchedule_t irrigationSchedule;
 
 void initializeRTC();
 
@@ -48,15 +58,16 @@ int setSystemTime(RTCTime_t time);
 
 RTCTime_t getRTCTime();
 
-irrigationTime_t readIrrigationTime();
-bool isIrrigationScheduleSet();
-int writeIrrigationTime(const irrigationTime_t *time);
+ScheduleTime_t readIrrigationSchedule(uint8_t schedule);
+bool isIrrigationScheduleSet(uint8_t schedule);
+void writeIrrigationTime(ScheduleTime_t time, uint8_t schedule);
 bool isSecondsBeforeIrrigationEvent(
-    irrigationTime_t *irrigationTime,
+    ScheduleTime_t irrigationTime,
     uint16_t secondsBefore,
     bool checkStartEvent   // true = check start time, false = check stop time
 ) ;
-bool isWithinIrrigationTime(irrigationTime_t *irrigationTime);
+bool isWithinIrrigationTime(ScheduleTime_t irrigationTime);
 uint8_t daysInMonth(uint8_t year_suffix, uint8_t month);
+
 
 #endif

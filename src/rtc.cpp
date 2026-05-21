@@ -1,11 +1,11 @@
 #include "rtc.h"
 #include "eeprom_utils.h"
+#define TOP_OF_HOUR (24 * 60)
 
 unsigned long lastTimestamp;
 unsigned long currentTimestamp;
 RTC_DS3231 rtc;
 
-irrigationTime_t irrigationSchedule;
 
 const char * const monthsOfYear[12] = {
     "January",
@@ -31,7 +31,7 @@ void initializeRTC() {
 
     if (rtc.lostPower()) {
         // Set RTC to a default date and time if it has lost power
-        rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+        // rtc.adjust(DateTime(F(__DATE__), F(__TIME__))); // This resets the time during power down on stm32f102. I don't know how but just remove it
     }
 
 }
@@ -67,37 +67,55 @@ RTCTime_t getRTCTime() {
 }
 
 // --- Struct operations ---
-irrigationTime_t readIrrigationTime() {
-    irrigationTime_t time;
-    time.startHour   = readStartHour();
-    time.startMinute = readStartMinute();
-    time.stopHour    = readStopHour();
-    time.stopMinute  = readStopMinute();
+ScheduleTime_t readIrrigationSchedule(uint8_t schedule) {
+    ScheduleTime_t time;
+    time.startHour   = readStartHour(schedule);
+    time.startMinute = readStartMinute(schedule);
+    time.stopHour    = readStopHour(schedule);
+    time.stopMinute  = readStopMinute(schedule);
     return time;
 }
 
-bool isIrrigationScheduleSet(){
-    irrigationTime_t time;
-    time.startHour   = readStartHour();
-    time.startMinute = readStartMinute();
-    time.stopHour    = readStopHour();
-    time.stopMinute  = readStopMinute();
-    if( time.startHour == 255 || time.startMinute == 255 || time.stopHour == 255 || time.stopMinute == 255 )  return false;
-    return true;
+static uint16_t toMinutes(uint8_t hour, uint8_t minute) {
+  return (uint16_t)hour * 60 + minute;
 }
 
-int writeIrrigationTime(const irrigationTime_t *time) {
-    int result;
-    if ((result = writeStartHour(time->startHour))   != EEPROM_SUCCESS) return result;
-    if ((result = writeStartMinute(time->startMinute)) != EEPROM_SUCCESS) return result;
-    if ((result = writeStopHour(time->stopHour))     != EEPROM_SUCCESS) return result;
-    if ((result = writeStopMinute(time->stopMinute)) != EEPROM_SUCCESS) return result;
-    return EEPROM_SUCCESS;
+static bool isTimeDifferenceMoreThan5Minutes(ScheduleTime_t t) {
+  uint16_t start = toMinutes(t.startHour,  t.startMinute);
+  uint16_t stop  = toMinutes(t.stopHour,   t.stopMinute);
+  return (stop > start) && ((stop - start) >= 5);
+}
+
+bool isIrrigationScheduleSet(uint8_t schedule){
+    ScheduleTime_t time;
+    uint16_t start_time = 0;
+    uint16_t stop_time = 0;
+    time.startHour   = readStartHour(schedule);
+    time.startMinute = readStartMinute(schedule);
+    time.stopHour    = readStopHour(schedule);
+    time.stopMinute  = readStopMinute(schedule);
+    if( (time.startHour < 24 && time.startMinute < 60 && time.stopHour < 24 && time.stopMinute < 60)){
+        if(isTimeDifferenceMoreThan5Minutes(time)) {
+            return true;
+        }
+    }  
+    return false;
+}
+
+
+
+void writeIrrigationTime(ScheduleTime_t time, uint8_t schedule) {
+    Serial.print("EEPROM Saving Schedule ");
+    Serial.println(schedule);
+    writeStartHour(time.startHour, schedule);
+    writeStartMinute(time.startMinute, schedule);
+    writeStopHour(time.stopHour, schedule);
+    writeStopMinute(time.stopMinute, schedule);
 }
 
 
 bool isSecondsBeforeIrrigationEvent(
-    irrigationTime_t *irrigationTime,
+    ScheduleTime_t irrigationTime,
     uint16_t secondsBefore,
     bool checkStartEvent   // true = check start time, false = check stop time
 ) {
@@ -105,8 +123,8 @@ bool isSecondsBeforeIrrigationEvent(
     unsigned long currentTimestamp = now.unixtime();
 
     // Select start or stop time based on user choice
-    uint8_t targetHour   = checkStartEvent ? irrigationTime->startHour  : irrigationTime->stopHour;
-    uint8_t targetMinute = checkStartEvent ? irrigationTime->startMinute : irrigationTime->stopMinute;
+    uint8_t targetHour   = checkStartEvent ? irrigationTime.startHour  : irrigationTime.stopHour;
+    uint8_t targetMinute = checkStartEvent ? irrigationTime.startMinute : irrigationTime.stopMinute;
 
     // Build today's event time
     DateTime eventTime(
@@ -132,7 +150,7 @@ bool isSecondsBeforeIrrigationEvent(
 
 
 
-bool isWithinIrrigationTime(irrigationTime_t *irrigationTime) {
+bool isWithinIrrigationTime(ScheduleTime_t irrigationTime) {
     DateTime now = rtc.now();
     unsigned long currentTimestamp = now.unixtime();
 
@@ -148,15 +166,15 @@ bool isWithinIrrigationTime(irrigationTime_t *irrigationTime) {
     DateTime startTime( now.year(), 
                         now.month(), 
                         now.day(), 
-                        irrigationTime->startHour, 
-                        irrigationTime->startMinute, 
+                        irrigationTime.startHour, 
+                        irrigationTime.startMinute, 
                         0);
 
     DateTime stopTime(  now.year(), 
                         now.month(), 
                         now.day(), 
-                        irrigationTime->stopHour, 
-                        irrigationTime->stopMinute, 
+                        irrigationTime.stopHour, 
+                        irrigationTime.stopMinute, 
                         0);
     
     unsigned long startTimestamp = startTime.unixtime();
@@ -176,6 +194,10 @@ bool isWithinIrrigationTime(irrigationTime_t *irrigationTime) {
         return (currentTimestamp >= startTimestamp || currentTimestamp <= stopTimestamp);
     }
 }
+
+// uint8_t getActiveSchedule(){
+//     isWithinIrrigationTime();
+// }
 
 uint8_t daysInMonth(uint8_t year_suffix, uint8_t month) {
   switch (month) {
