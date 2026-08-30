@@ -17,6 +17,9 @@
 #define INT_TWELVE_VOLTS 12
 #define INT_TWENTY_FOUR_VOLTS 24
 
+#define MIN_VALVE_VOLTAGE_VS_POWER_SUPPLY_DIFFERENCE 3
+
+
 void tmux1208Init();
 void setMuxEnable(bool state);
 void clearAddressBits();
@@ -28,6 +31,6 @@ void set24V();
 void turnOffValveVoltage();
 float readValveVoltage();
 float readInputVoltage();
-void setVoltage(ValveVoltage new_voltage, bool *status);
+void setVoltage(ValveVoltage new_voltage, VsetRes_t *status);
 
 #endif

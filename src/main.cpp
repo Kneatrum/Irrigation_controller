@@ -909,9 +909,9 @@ void loop() {
         } else if(stateMachine.currentConfigSubstate == VOLTAGE_SELECTION){
           if(stateMachine.currentNotification == SAVE_VOLTAGE){
             if(stateMachine.USER_CONFIRMS){
-              bool success = false;
-              setVoltage(TEMPORARY_VALVE_VOLTAGE, &success);
-              if(success){
+              VsetRes_t status;
+              setVoltage(TEMPORARY_VALVE_VOLTAGE, &status);
+              if(status == VSET_SUCCESS){
                 saveSelectedVoltage(TEMPORARY_VALVE_VOLTAGE);
                 saveVoltageSelectionState(true);
 
@@ -960,6 +960,21 @@ void loop() {
                   setMenuNavigationState();
                   updateScreenFlag = true;
                 }
+              } else if(status == VSET_TIMEOUT){
+                showMessage("Timeout in setting voltage");
+                delay(3000);
+                setMenuNavigationState();
+                updateScreenFlag = true;
+              } else if(status == VSET_ERROR){
+                showMessage("Error setting voltage");
+                delay(3000);
+                setMenuNavigationState();
+                updateScreenFlag = true;
+              } else if(status == VSET_SUPPLY_VOLTAGE_TOO_LOW){
+                showMessage("Supply voltage too low");
+                delay(3000);
+                setMenuNavigationState();
+                updateScreenFlag = true;
               }
               // Check make sure that CONFIG_DONE is set to true before allowing a transition to another state
               // setShowingDetailsState();

@@ -84,21 +84,36 @@ float readInputVoltage(){
     return resolution * adc_out * maxADCvsSystemVoltageFactor;
 }
 
-void setVoltage(ValveVoltage new_voltage, bool *status){
-    float valve_voltage = 0;
+void setVoltage(ValveVoltage new_voltage, VsetRes_t *status){
+    float input_voltage = readInputVoltage();
+    uint8_t INT_INPUT_V = ( (uint8_t)round(input_voltage) );
+    float valve_voltage;
+    float temp_dif = 0.0;
+    delay(100);
+
     switch(new_voltage)
     {
         case FIVE_VOLTS:
             clearAddressBits();
             set5V();
             setMuxEnable(true);
-            delay(500);
+            delay(100);
             valve_voltage = readValveVoltage();
-            if(abs(valve_voltage - INT_FIVE_VOLTS <= VOLTAGE_ERROR)){
-                *status = true; 
+
+
+            if((INT_INPUT_V - INT_FIVE_VOLTS) < MIN_VALVE_VOLTAGE_VS_POWER_SUPPLY_DIFFERENCE ){
+                *status = VSET_SUPPLY_VOLTAGE_TOO_LOW;
+                turnOffValveVoltage();
+                break;
+            }
+
+            temp_dif = abs(valve_voltage - INT_FIVE_VOLTS);
+            
+            if( temp_dif <= VOLTAGE_ERROR){
+                *status = VSET_SUCCESS;
             }  else {
                 turnOffValveVoltage();
-                *status = false;
+                *status = VSET_ERROR;
             }
         break;
 
@@ -106,13 +121,22 @@ void setVoltage(ValveVoltage new_voltage, bool *status){
             clearAddressBits();
             set6V();
             setMuxEnable(true);
-            delay(500);
+            delay(100);
             valve_voltage = readValveVoltage();
-            if(abs(valve_voltage - INT_SIX_VOLTS) <= VOLTAGE_ERROR){
-                *status = true; 
+
+            if((INT_INPUT_V - INT_SIX_VOLTS) < MIN_VALVE_VOLTAGE_VS_POWER_SUPPLY_DIFFERENCE ){
+                *status = VSET_SUPPLY_VOLTAGE_TOO_LOW;
+                turnOffValveVoltage();
+                break;
+            }
+
+            temp_dif = abs(valve_voltage - INT_SIX_VOLTS);
+
+            if(temp_dif <= VOLTAGE_ERROR){
+                *status = VSET_SUCCESS; 
             } else {
                 turnOffValveVoltage();
-                *status = false; 
+                *status = VSET_ERROR; 
             } 
         break;
 
@@ -120,13 +144,22 @@ void setVoltage(ValveVoltage new_voltage, bool *status){
             clearAddressBits();
             set9V();
             setMuxEnable(true);
-            delay(500);
+            delay(100);
             valve_voltage = readValveVoltage();
+
+            if((INT_INPUT_V - INT_NINE_VOLTS) < MIN_VALVE_VOLTAGE_VS_POWER_SUPPLY_DIFFERENCE ){
+                *status = VSET_SUPPLY_VOLTAGE_TOO_LOW;
+                turnOffValveVoltage();
+                break;
+            }
+
+            temp_dif = abs(valve_voltage - INT_NINE_VOLTS);
+
             if(abs(valve_voltage - INT_NINE_VOLTS) <= VOLTAGE_ERROR){
-                *status = true; 
+                *status = VSET_SUCCESS; 
             } else {
                 turnOffValveVoltage();
-                *status = false;
+                *status = VSET_ERROR;
             }
         break;
 
@@ -134,13 +167,22 @@ void setVoltage(ValveVoltage new_voltage, bool *status){
             clearAddressBits();
             set12V();
             setMuxEnable(true);
-            delay(500);
+            delay(100);
             valve_voltage = readValveVoltage();
-            if(abs(valve_voltage - INT_TWELVE_VOLTS) <= VOLTAGE_ERROR){
-                *status = true; 
+
+            if((INT_INPUT_V - INT_TWELVE_VOLTS) < MIN_VALVE_VOLTAGE_VS_POWER_SUPPLY_DIFFERENCE ){
+                *status = VSET_SUPPLY_VOLTAGE_TOO_LOW;
+                turnOffValveVoltage();
+                break;
+            }
+
+            temp_dif = abs(valve_voltage - INT_TWELVE_VOLTS);
+
+            if(temp_dif <= VOLTAGE_ERROR){
+                *status = VSET_SUCCESS; 
             } else {
                 turnOffValveVoltage();
-                *status = false;
+                *status = VSET_ERROR;
             }
         break;
 
@@ -148,12 +190,22 @@ void setVoltage(ValveVoltage new_voltage, bool *status){
             clearAddressBits();
             set24V();
             setMuxEnable(true);
-            delay(500);
-            valve_voltage = readValveVoltage();
-            if(abs(valve_voltage - INT_TWENTY_FOUR_VOLTS) <= VOLTAGE_ERROR) {
-                *status = true; 
+            delay(100);
+            float valve_voltage = readValveVoltage();
+            
+            if((INT_INPUT_V - INT_TWENTY_FOUR_VOLTS) < MIN_VALVE_VOLTAGE_VS_POWER_SUPPLY_DIFFERENCE ){
+                *status = VSET_SUPPLY_VOLTAGE_TOO_LOW;
+                turnOffValveVoltage();
+                break;
+            }
+
+            temp_dif = abs(valve_voltage - INT_TWENTY_FOUR_VOLTS);
+
+            if(temp_dif <= VOLTAGE_ERROR) {
+                *status = VSET_SUCCESS;
             } else {
-                *status = false;
+                *status = VSET_ERROR;
+                turnOffValveVoltage();
             }
         break;
     }

@@ -17,6 +17,7 @@ typedef struct menuItem_t {
 
 typedef enum {
     VSET_SUCCESS,
+    VSET_SUPPLY_VOLTAGE_TOO_LOW,
     VSET_TIMEOUT,
     VSET_ERROR
 } VsetRes_t;
