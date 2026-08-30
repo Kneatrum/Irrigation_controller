@@ -578,7 +578,7 @@ void loop() {
         } else if (stateMachine.currentConfigSubstate == SYSTEM_TIME_NAVIGATION) {
           if(stateMachine.currentNotification == SAVE_SYSTEM_TIME){
             if(clockwiseTurn) stateMachine.USER_CONFIRMS = true;
-            else stateMachine.USER_CONFIRMS = true;
+            else stateMachine.USER_CONFIRMS = false;
           } else {
             handleSystemTimeField(&stateMachine.currentSystemTimeField, &currentTime);
           }
