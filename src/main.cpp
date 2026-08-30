@@ -634,12 +634,12 @@ void loop() {
               delay(3000);
             }
           } else {
-            showMessage("Turning valve off");
+            showMessage("Initialising");
             // stateMachine.setValve(false);
             VsetRes_t res = stateMachine.setValve(false);
             if(res == VSET_SUCCESS ){
-              showMessage("Success setting voltage");
-              delay(3000);
+              // showMessage("Success setting voltage");
+              // delay(3000);
             } else if (res == VSET_TIMEOUT){
               showMessage("Timeout in setting voltage");
               delay(3000);
@@ -868,19 +868,21 @@ void loop() {
                 stateMachine.activeMenuItem = MENU_ITEMS->data;
 
                 if(stateMachine.voltage_is_selected && stateMachine.irrigation_schedules[stateMachine.schedule_index].time_is_set){
-                  stateMachine.CONFIG_DONE = true;
-                  showMessage("Turning valve off");
-                  VsetRes_t res = stateMachine.setValve(false);
-                  if(res == VSET_SUCCESS ){
-                    showMessage("Success setting valve");
-                    delay(3000);
-                    setShowingDetailsState();
-                  } else if (res == VSET_TIMEOUT){
-                    showMessage("Timeout in setting valve");
-                    delay(3000);
-                  } else if(res == VSET_ERROR){
-                    showMessage("Error setting valve");
-                    delay(3000);
+                  if(!stateMachine.CONFIG_DONE){
+                    stateMachine.CONFIG_DONE = true;
+                    // showMessage("Turning valve off");
+                    // VsetRes_t res = stateMachine.setValve(false); 
+                    // if(res == VSET_SUCCESS ){
+                    //   showMessage("Success setting valve");
+                    //   delay(3000);
+                    //   setShowingDetailsState();
+                    // } else if (res == VSET_TIMEOUT){
+                    //   showMessage("Timeout in setting valve");
+                    //   delay(3000);
+                    // } else if(res == VSET_ERROR){
+                    //   showMessage("Error setting valve");
+                    //   delay(3000);
+                    // }
                   }
                 } else {
                   setMenuNavigationState();
@@ -935,22 +937,24 @@ void loop() {
 
                 if(stateMachine.valve_is_selected && stateMachine.irrigation_schedules[stateMachine.schedule_index].time_is_set){
                   setShowingDetailsState();
-                  stateMachine.CONFIG_DONE = true;
-                  showMessage("Turning valve off");
-                  delay(3000);
-                  VsetRes_t res = stateMachine.setValve(false);
-                  if(res == VSET_SUCCESS ){
-                    showMessage("Success setting valve");
+                  if(!stateMachine.CONFIG_DONE){
+                    stateMachine.CONFIG_DONE = true;
+                    showMessage("Turning valve off");
                     delay(3000);
-                    updateScreenFlag = true;
-                  } else if (res == VSET_TIMEOUT){
-                    showMessage("Timeout in setting valve");
-                    delay(3000);
-                    updateScreenFlag = true;
-                  } else if(res == VSET_ERROR){
-                    showMessage("Error setting valve");
-                    delay(3000);
-                    updateScreenFlag = true;
+                    VsetRes_t res = stateMachine.setValve(false);
+                    if(res == VSET_SUCCESS ){
+                      showMessage("Success setting valve");
+                      delay(3000);
+                      updateScreenFlag = true;
+                    } else if (res == VSET_TIMEOUT){
+                      showMessage("Timeout in setting valve");
+                      delay(3000);
+                      updateScreenFlag = true;
+                    } else if(res == VSET_ERROR){
+                      showMessage("Error setting valve");
+                      delay(3000);
+                      updateScreenFlag = true;
+                    }
                   }
                 } else {
                   setMenuNavigationState();
@@ -1109,19 +1113,21 @@ void loop() {
 
                     if(stateMachine.valve_is_selected && stateMachine.voltage_is_selected){
                       // Serial.println("Configuration is done");
-                      stateMachine.CONFIG_DONE = true;
-                      setShowingDetailsState();
-                      showMessage("Turning valve off");
-                      VsetRes_t res = stateMachine.setValve(false);
-                      if(res == VSET_SUCCESS ){
-                        showMessage("Success setting valve");
-                        delay(3000);
-                      } else if (res == VSET_TIMEOUT){
-                        showMessage("Timeout in setting valve");
-                        delay(3000);
-                      } else if(res == VSET_ERROR){
-                        showMessage("Error setting valve");
-                        delay(3000);
+                      if(!stateMachine.CONFIG_DONE){
+                        stateMachine.CONFIG_DONE = true;
+                        setShowingDetailsState();
+                        showMessage("Turning valve off");
+                        VsetRes_t res = stateMachine.setValve(false);
+                        if(res == VSET_SUCCESS ){
+                          showMessage("Success setting valve");
+                          delay(3000);
+                        } else if (res == VSET_TIMEOUT){
+                          showMessage("Timeout in setting valve");
+                          delay(3000);
+                        } else if(res == VSET_ERROR){
+                          showMessage("Error setting valve");
+                          delay(3000);
+                        }
                       }
                     } else{
                       // Serial.println("Return to Menu navigation");
@@ -1172,20 +1178,22 @@ void loop() {
               }
 
               if(at_least_one_time_schedule_is_set && stateMachine.valve_is_selected && stateMachine.voltage_is_selected){
-                stateMachine.CONFIG_DONE = true;
-                setShowingDetailsState();
-                // Serial.println("Turn off valve first");
-                showMessage("Turning valve off");
-                VsetRes_t res = stateMachine.setValve(false);
-                if(res == VSET_SUCCESS ){
-                  showMessage("Success setting valve");
-                  delay(3000);
-                } else if (res == VSET_TIMEOUT){
-                  showMessage("Timeout in setting valve");
-                  delay(3000);
-                } else if(res == VSET_ERROR){
-                  showMessage("Error setting valve");
-                  delay(3000);
+                if(!stateMachine.CONFIG_DONE){
+                  stateMachine.CONFIG_DONE = true;
+                  setShowingDetailsState();
+                  Serial.println("Turn off valve first");
+                  showMessage("Turning valve off");
+                  VsetRes_t res = stateMachine.setValve(false);
+                  if(res == VSET_SUCCESS ){
+                    showMessage("Success setting valve");
+                    delay(3000);
+                  } else if (res == VSET_TIMEOUT){
+                    showMessage("Timeout in setting valve");
+                    delay(3000);
+                  } else if(res == VSET_ERROR){
+                    showMessage("Error setting valve");
+                    delay(3000);
+                  }
                 }
               } else {
                 setMenuNavigationState();
