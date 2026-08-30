@@ -12,7 +12,7 @@
 #define PIN_RST  PB11
 
 // Screen backlight pin
-#define BACKLIGHT_PIN PA6
+#define BACKLIGHT_PIN PA6  // Change this to another non-spi pin and leave it unused.
 
 // Relay control pins
 #define CR02_CTRL PB8 
